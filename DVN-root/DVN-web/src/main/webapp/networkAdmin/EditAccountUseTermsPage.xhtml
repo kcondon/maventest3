@@ -1,0 +1,42 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+                      xmlns:h="http://java.sun.com/jsf/html"
+                      xmlns:f="http://java.sun.com/jsf/core"
+                      xmlns:jsp="http://java.sun.com/JSP/Page"
+                      xmlns:ice="http://www.icesoft.com/icefaces/component"
+                      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+                      jsfc="ice:panelGroup">
+<script type="text/javascript">
+    // <![CDATA[
+    jQuery(document).ready(function(){
+        
+        initCheckTermsEnabled();
+        
+    });
+    // ]]>
+</script>
+<tr>
+    <td class="dvnOptionsTableOption">
+        <ice:outputText value="Account Term of Use"/>
+    </td>
+    <td>
+        <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+            <div class="dvnMsgBlockContainer">
+                <ice:outputText value="#{bundlePageInfo.editDvnAccountTermsHelp}" escape="false"/>
+            </div>
+        </div>
+        <div jsfc="ice:panelGroup" styleClass="dvnTermsEnable">
+            <ice:selectBooleanCheckbox value="#{OptionsPage.networkAccountTermsOfUseEnabled}" onclick="checkAccountTermsEnabled();"/>
+            <ice:outputText value=" Enable Terms of Use"/>
+        </div>
+        <ice:message for="textArea1" styleClass="errorMessage" id="outputText2Msg"/>
+        <br/>
+        <div jsfc="ice:panelGroup" styleClass="dvnTermsField" style="#{OptionsPage.networkAccountTermsOfUseEnabled} ? 'display:block;' : 'display:none;'">
+            <ice:inputTextarea styleClass="formHtmlEnabled" cols="70" rows="8"
+                               id="textArea1" immediate="true"
+                               value="#{OptionsPage.networkAccountTermsOfUse}">
+                <f:validator validatorId="XhtmlValidator"/>
+            </ice:inputTextarea>
+        </div>
+    </td>
+</tr>
+</div>

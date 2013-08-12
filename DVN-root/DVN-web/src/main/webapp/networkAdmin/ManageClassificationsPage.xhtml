@@ -1,0 +1,111 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+      jsfc="ice:panelGroup">
+
+          <div class="dvnManageClassificationsTableTop">
+            <div jsfc="ice:panelGroup" styleClass="dvn_margin12 dvnInformationMessage">
+                <div class="dvnMsgBlockContainer">
+                  <ice:outputText value="#{bundlePageInfo.manageClassificationsHelp}" escape="false"/>
+                </div>
+            </div>
+            
+            <div jsfc="ice:panelGroup" styleClass="dvnManageClassificationsTableCreateLink">
+              <ice:outputLink value="/dvn#{VDCRequest.currentVDCURL}/faces/networkAdmin/AddClassificationsPage.xhtml">
+                <ice:outputText id="createClassification" value="Create Classification"/>
+              </ice:outputLink>
+            </div>
+            <div jsfc="ice:panelGroup" styleClass="dvnManageClassificationsTableTotals">
+              <ice:outputText value="Classifications: "/>
+              <ice:outputText value="#{OptionsPage.itemBeansSize}" styleClass="dvn_totalsValue"/>
+            </div>
+          </div>
+          <div jsfc="ice:panelGroup" styleClass="dvnManageTableEmpty" rendered="#{OptionsPage.itemBeansSize == 0}">
+              <ice:outputText value="There are no classifications set up for this Dataverse Network."/>
+          </div>
+          <ice:dataTable id="dataverseListClass" 
+                         rendered="#{OptionsPage.itemBeansSize != 0}"
+                         styleClass="dvnManageClassificationsTable"
+                         rowClasses="evenRow, oddRow" headerClass="groupRow"
+                         columnClasses="dvnMngClssTableSelect,dvnMngClssTableName,dvnMngClssTableDesc,dvnMngClssTableCount,dvnMngClssTableDelete"
+                         sortAscending="#{OptionsPage.list.ascending}"
+                         sortColumn="#{OptionsPage.list.sortColumnName}"
+                         value="#{OptionsPage.list.visibleClassificationUIs}" var="dvItems">
+            <!-- name number -->
+            <f:facet name="header">
+              
+            </f:facet>
+            <!-- contract/expand column -->
+            <ice:column>
+              <ice:panelGroup>
+                <!-- Render the expand/contract if there is an image -->
+                <ice:commandLink actionListener="#{OptionsPage.toggleChildren}">
+                  <ice:graphicImage id="expandContractImage"
+                                    binding="#{OptionsPage.toggleImage}"
+                                    rendered="#{dvItems.expandContractImage != null and dvItems.level != 3}"
+                                    value="#{dvItems.expandContractImage}"><!--  -->
+                    <f:attribute name="groupingId" value="#{dvItems.vdcGroup.id}"/>
+                  </ice:graphicImage>
+                </ice:commandLink>
+                <ice:outputText escape="false"
+                                rendered="#{dvItems.expandContractImage == null}"
+                                value="&lt;!-- cell spacer --&gt;"/>
+              </ice:panelGroup>
+            </ice:column>
+            <!-- classification name -->
+            <ice:column>
+              <f:facet name="header">
+                <ice:commandSortHeader
+                  columnName="#{OptionsPage.list.nameColumnName}"
+                  arrow="true">
+                  <ice:outputText value="#{OptionsPage.list.nameColumnName}"/>
+                </ice:commandSortHeader>
+              </f:facet>
+              <ice:outputLink
+                  value="/dvn/faces/networkAdmin/AddClassificationsPage.xhtml">
+                <f:param name="classId" value="#{dvItems.vdcGroup.id}"/>
+                <ice:outputText styleClass="#{dvItems.indentStyle}"
+                                style="padding-left: #{dvItems.textIndent}em; background-position: #{dvItems.textIndent - 1.5}em;"
+                                value="#{dvItems.vdcGroup.name}"/>
+              </ice:outputLink>
+            </ice:column>
+            <!-- description -->
+            <ice:column>
+              <f:facet name="header">
+                <ice:commandSortHeader
+                  columnName="#{OptionsPage.list.descriptionColumnName}"
+                  arrow="true"
+                  >
+                  <ice:outputText value="#{OptionsPage.list.descriptionColumnName}"/>
+                </ice:commandSortHeader>
+              </f:facet>
+              <ice:outputText value="#{dvItems.vdcGroup.description}"/>
+            </ice:column>
+            <!-- subclassifications  -->
+            <ice:column>
+              <f:facet name="header">
+                <ice:commandSortHeader
+                  columnName="#{OptionsPage.list.subclassificationsColumnName}"
+                  arrow="true"
+                  >
+                  <ice:outputText value="#{OptionsPage.list.subclassificationsColumnName}"/>
+                </ice:commandSortHeader>
+              </f:facet>
+              <ice:outputText value="#{dvItems.totalSubclassifications}"/>
+            </ice:column>
+            <!-- controls -->
+            <ice:column>
+              <f:facet name="header">
+                <ice:outputText escape="false" value="Delete"/>
+              </f:facet>
+              <ice:outputLink value="/dvn/faces/networkAdmin/DeleteClassificationsPage.xhtml">
+                <f:param name="classId" value="#{dvItems.vdcGroup.id}"/>
+                <ice:outputText value="Delete"/>
+              </ice:outputLink>
+            </ice:column>
+          </ice:dataTable>
+
+</div>

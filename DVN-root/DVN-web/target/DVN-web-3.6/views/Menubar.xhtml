@@ -1,0 +1,137 @@
+<div class="dvn_sectionHeader"
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:ice="http://www.icesoft.com/icefaces/component">
+    <div jsfc="ice:panelGroup" id="navblockDiv" styleClass="#{(VDCRequest.currentVDC == null) ? 'dvn_navblock dvn_navblockNetwork' : 'dvn_navblock'}">
+        <div class="dvn_navblockLinks">
+            <table cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tbody>
+                    <tr>
+                        <td align="left" valign="top">
+                            <div jsfc="ice:panelGroup" styleClass="dvn_headerTitleL" rendered="#{VDCRequest.currentVDC != null}">
+                                <ice:outputText value="&#160;" rendered="#{VDCRequest.currentVDC == null}"/>
+                                <ice:outputLink value="/dvn" title="#{VDCRequest.vdcNetwork.name} Dataverse Network Homepage" target="_top">
+                                    <ice:outputText value="#{VDCRequest.vdcNetwork.name} Dataverse Network &#160;&gt;"/>
+                                </ice:outputLink>
+                                <ice:outputText value="&#160;&#160;" nospan="true"/>
+                                <ice:outputLink value="/dvn/dataverses/#{VDCRequest.currentVDC.vdcNetwork.urlAlias}" 
+                                                rendered="#{VDCRequest.currentVDC.vdcNetwork.id != VDCRequest.vdcNetwork.id}"
+                                                styleClass="dvnHeaderDVSubnetworkLink" title="#{VDCRequest.currentVDC.vdcNetwork.name} Dataverses" target="_top">
+                                    <ice:outputText value="#{VDCRequest.currentVDC.vdcNetwork.name} Dataverses &#160;&gt;"/>
+                                </ice:outputLink>
+                            </div>
+                        </td>
+                        <td rowspan="2" align="right" valign="bottom">
+                            <div class="dvn_navblockWrap">
+                                <div class="dvn_headerTitleR">
+                                    <a href="http://thedata.org" target="_blank" title="Link to the Dataverse Network Project">
+                                        <img alt="Powered by the Dataverse Network Project" src="/dvn/resources/images/dvnPoweredByLogo.gif"/>
+                                    </a>
+                                    <div class="dvn_headerVersion"><ice:outputText value="v. #{VersionPage.versionNumber}"/></div>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <ice:outputLink styleClass="navicon naviconsearch" value="/dvn#{VDCRequest.currentVDCURL}/faces/AdvSearchPage.xhtml" title="Basic or Advanced Search of #{VDCRequest.currentVDC.name} dataverse" rendered="#{VDCRequest.currentVDC != null}">
+                                            <ice:outputText value="#{bundle.searchLabel}"/>
+                                        </ice:outputLink>
+                                        <ice:outputLink styleClass="navicon naviconsearch" value="/dvn#{VDCRequest.currentVDCURL}/faces/AdvSearchPage.xhtml" title="Basic or Advanced Search of #{VDCRequest.vdcNetwork.name} Dataverse Network" rendered="#{VDCRequest.currentVDC == null}">
+                                            <ice:outputText value="#{bundle.searchLabel}"/>
+                                        </ice:outputLink>
+                                    </li>
+                                    <ice:outputText nospan="true" escape="false" rendered="#{VDCRequest.renderManifestLink}">
+                                        <li>
+                                            <ice:outputLink id="hyperlinkM" styleClass="navicon naviconmanifest" value="/dvn#{VDCRequest.currentVDCURL}/ManifestPage.jsp" title="#{VDCRequest.vdcNetwork.name} Dataverse Network LOCKSS Manifest">
+                                                <ice:outputText id="hyperlinkMText1" value="#{bundlePageInfo.viewLOCKSSManifestPage}"/>
+                                            </ice:outputLink>
+                                        </li>
+                                    </ice:outputText>
+                                    <li>
+                                        <ice:outputLink styleClass="navicon naviconguides" value="http://guides.thedata.org/pages/users-guides" target="_blank" title="Go to User Guides">
+                                            <ice:outputText value="#{bundle.helpLabel}"/>
+                                        </ice:outputLink>
+                                    </li>
+                                    <li>
+                                        <ice:outputLink styleClass="navicon naviconcontact" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/ContactUsPage.xhtml" title="Contact #{VDCRequest.vdcNetwork.name} Dataverse Network Help" rendered="#{VDCRequest.currentVDC == null}">
+                                            <ice:outputText value="#{bundle.contactUsLabel}"/>
+                                        </ice:outputLink>
+                                        <ice:outputLink styleClass="navicon naviconcontact" value="/dvn/dv/#{VDCRequest.currentVDC.alias}/faces/ContactUsPage.xhtml" title="Contact #{VDCRequest.currentVDC.name} dataverse Help" rendered="#{VDCRequest.currentVDC != null}">
+                                            <ice:outputText value="#{bundle.contactUsLabel}"/>
+                                        </ice:outputLink>
+                                    </li>
+                                    <ice:outputText nospan="true" escape="false" rendered="#{VDCRequest.currentVDC == null and !VDCRequest.logoutPage and (VDCSession.loginBean.networkAdmin) and !VDCRequest.readOnlyDatabase}">
+                                        <li>
+                                            <ice:outputLink styleClass="navicon naviconoptions" value="/dvn/faces/networkAdmin/NetworkOptionsPage.xhtml" title="#{VDCRequest.vdcNetwork.name} Dataverse Network Admin Options">
+                                                <ice:outputText value="Options"/>
+                                            </ice:outputLink>
+                                        </li>
+                                    </ice:outputText>
+                                    <ice:outputText nospan="true" escape="false" rendered="#{VDCRequest.currentVDC != null and !VDCRequest.logoutPage and !VDCRequest.readOnlyDatabase and (VDCSession.loginBean.admin or VDCSession.loginBean.curator or VDCSession.loginBean.contributor or VDCSession.loginBean.networkAdmin or VDCRequest.currentVDC.allowRegisteredUsersToContribute)}">
+                                        <li>
+                                            <ice:outputLink styleClass="navicon naviconoptions" value="/dvn#{VDCRequest.currentVDCURL}/faces/admin/OptionsPage.xhtml" title="Options in #{VDCRequest.currentVDC.name} dataverse">
+                                                <ice:outputText value="#{bundle.myOptionsLabel}"/>
+                                            </ice:outputLink>
+                                        </li>
+                                    </ice:outputText>
+                                    <ice:outputText nospan="true" escape="false" rendered="#{VDCRequest.logoutPage or VDCSession.loginBean.user==null}">
+                                        <li class="dvn_navUserName">
+                                            <ice:form rendered="#{!VDCRequest.readOnlyDatabase}">
+                                                <ice:commandLink action="#{LoginWorkflowBean.beginContributorWorkflow}" title="Create Account">
+                                                    <ice:outputText value="#{bundle.createaccountLabel}"/>
+                                                </ice:commandLink>
+                                            </ice:form>
+                                        </li>
+                                        <ice:outputText nospan="true" escape="false" rendered="#{!VDCRequest.logoutPage and VDCSession.ipUserGroup.friendlyName != null}">
+                                            <li class="dvn_navUserGroup">
+                                                <ice:outputText value="#{VDCSession.ipUserGroup.friendlyName}"/>
+                                            </li>
+                                        </ice:outputText>
+                                        <li>
+                                            <ice:outputLink value="/dvn#{VDCRequest.currentVDCURL}/faces/login/LoginPage.xhtml?clearWorkflow=true" title="Log In">
+                                                <ice:outputText value="#{bundle.loginLabel}"/>
+                                            </ice:outputLink>
+                                        </li>
+                                    </ice:outputText>
+                                    <ice:outputText nospan="true" escape="false" rendered="#{(!VDCRequest.logoutPage and VDCSession.loginBean.user != null)}">
+                                        <li class="dvn_navUserName">
+                                            <ice:outputLink value="/dvn/faces/login/AccountOptionsPage.xhtml?userId=#{VDCSession.loginBean.user.id}" title="Edit Account Information">
+                                                <ice:outputText value="#{VDCSession.loginBean.user.firstName} #{VDCSession.loginBean.user.lastName}"/>
+                                            </ice:outputLink>
+                                        </li>
+                                        <li>
+                                            <ice:outputLink value="/dvn#{VDCRequest.currentVDCURL}/faces/login/LogoutPage.xhtml" title="Log Out">
+                                                <ice:outputText value="#{bundle.logoutLabel}"/>
+                                            </ice:outputLink>
+                                        </li>
+                                    </ice:outputText>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="bottom">
+                            <div class="dvn_headerTitleLarge">
+                                <ice:outputLink value="/dvn" styleClass="dvn_headerTitleLrgNetwork" title="#{VDCRequest.vdcNetwork.name} Dataverse Network Homepage" rendered="#{VDCRequest.currentVDC == null}">
+                                    <ice:outputText value="#{VDCRequest.vdcNetwork.name} Dataverse Network" rendered="#{VDCRequest.currentVdcNetwork.id == VDCRequest.vdcNetwork.id}" nospan="true"/>
+                                    <ice:outputText value="#{VDCRequest.vdcNetwork.name} Dataverse Network &#62;" rendered="#{VDCRequest.currentSubnetwork != null}" nospan="true"/>
+                                </ice:outputLink>
+                                <ice:outputText value="&#160;&#160;" rendered="#{VDCRequest.currentSubnetwork != null and VDCRequest.currentVDC == null}" nospan="true"/>
+                                <ice:outputLink value="/dvn/dataverses/#{VDCRequest.currentVdcNetwork.urlAlias}" title="#{VDCRequest.currentVdcNetwork.name} Dataverses" 
+                                                rendered="#{VDCRequest.currentSubnetwork != null  and VDCRequest.currentVDC == null}">
+                                    <ice:outputText value="#{VDCRequest.currentVdcNetwork.name} Dataverses" nospan="true"/>
+                                </ice:outputLink>
+                                <ice:outputLink value="/dvn/dv/#{VDCRequest.currentVDC.alias}" title="#{VDCRequest.currentVDC.name} Dataverse Homepage" rendered="#{VDCRequest.currentVDC != null}">
+                                    <ice:outputText value="#{VDCRequest.currentVDC.name} Dataverse" nospan="true"/>
+                                </ice:outputLink>
+                                <ice:outputLink value="/dvn#{VDCRequest.currentVDCURL}/faces/admin/OptionsPage.xhtml?tab=settings" styleClass="dvnUnreleasedDVIcon dvnInlineHelpTip" 
+                                                rendered="#{VDCRequest.currentVDC != null and VDCRequest.currentVDC.restricted}" title="Unreleased Dataverse - Your dataverse is currently set to Not Released, and will not be featured on the network homepage until it is released. To release the dataverse, click this icon, to go to the Dataverse Settings page."
+                                                ><img src="/dvn/resources/images/icon_warning.18.png" alt="Unreleased Dataverse"/>                                    
+                                </ice:outputLink>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

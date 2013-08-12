@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:ice="http://www.icesoft.com/icefaces/component">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+  <ui:composition template="/template.xhtml">
+    <ui:param name="pageTitle" value="#{bundlePageInfo.manageStudyPermissionsTitle} - #{VDCRequest.dataversePageTitle}"/>
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="studyId" value="#{StudyPermissionsPage.studyId}"/>
+            <f:viewParam name="studyListingIndex" value="#{VDCRequest.studyListingIndex}"/>
+            <f:viewParam name="versionNumber" value="#{VDCRequest.studyVersionNumber}"/>
+            <f:event type="preRenderView" listener="#{StudyPermissionsPage.preRenderView}" />
+        </f:metadata>  
+    </ui:define>   
+    <ui:define name="body">
+      <ice:form id="form1">
+      <script type="text/javascript">
+          // <![CDATA[
+          function updateAllCheckboxes( selectAllCheckbox ) {
+              checkboxes=document.getElementsByTagName("input");
+              for(i=0; i < checkboxes.length; i++) {
+                  if (checkboxes[i].id.indexOf("filePermissionCheckbox") != -1) {
+                      checkboxes[i].checked = selectAllCheckbox.checked;
+                  }
+              }
+          }
+          var timeout= 800; //milliseconds to wait for no activity
+          var countEvents= 0;
+          function delayedRequest(form,field,event){
+              countEvents++;
+              setTimeout(function() {
+                  countEvents--;
+                  if(countEvents==0){               
+                      document.getElementById('form1:updateFileList').click();
+                  }
+              },timeout);
+          }
+          function removeCheckBoxes(objId) 
+            {
+                var fileCBs = getElementsByClassName("iceSelBoolChkbx", document.getElementById(objId));
+                for (var i = 0; i < fileCBs.length; i++) {
+                    fileCBs[i].checked= false;
+                }
+                return false;                
+            }
+            function getElementsByClassName( strClassName, obj ) {
+                var ar = arguments[2] || new Array();
+                var re = new RegExp("\\b" + strClassName + "\\b", "g");
+                if ( re.test(obj.className) ) {
+                    ar.push( obj );
+                }
+                for ( var i = 0; i < obj.childNodes.length; i++ )
+                    getElementsByClassName( strClassName, obj.childNodes[i], ar );
+                    return ar;
+            }          
+          // ]]>
+      </script>
+        <ice:commandButton visible="false" id="updateFileList" action="#{StudyPermissionsPage.updateAllFilesList}"/>
+        <input type="hidden" name="pageName" value="StudyPermissionsPage"/>
+        <ice:inputHidden id="vdcId" value="#{VDCRequest.currentVDCId}"/>
+        <ice:inputHidden id="studyId" value="#{StudyPermissionsPage.studyId}"/>
+        <div class="dvn_section">
+          <div class="dvnstudytitleblock dvn_padBot">
+            <div class="dvnstudyadminboxfloat dvn_right">
+                <div class="dvnFormMargin">
+                  <ice:commandButton value="Save" action="#{StudyPermissionsPage.save}"/>
+                  <ice:commandButton value="Cancel" action="#{StudyPermissionsPage.cancel}"/>
+                </div>
+            </div>
+            <ui:include src="/study/StudyTitleFragment.xhtml">
+                <ui:param name="studyUI" value="#{StudyPermissionsPage.studyUI}"/>
+                <ui:param name="displayReleaseLink" value="false"/>
+                <ui:param name="displayVersionInfo" value="false"/>
+                    <ui:param name="displayStatusBox" value="false"/>
+            </ui:include>
+          </div>
+          <div class="dvn_sectionTitle">
+            <ice:outputText value="#{bundlePageInfo.manageStudyPermissionsTitle}"/>
+          </div>
+          <div class="dvn_sectionBox">
+              <div class="dvn_margin12">
+                <ice:panelTabSet styleClass="dvnTabs dvnSubTabs">
+                <ice:panelTab label="Study">
+                <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+                    <div class="dvnMsgBlockContainer">
+                      <ice:outputText value="#{bundlePageInfo.manageStudyPermissionsStudyHelp}" escape="false"/>
+                    </div>
+                </div>
+                <table class="dvnPermissionsTable" cellspacing="0" cellpadding="0" border="0">
+                  <tr><td colspan="2" class="dvnPermissionsTableHeader"><ice:outputText value="Entire Study Permission Settings"/></td></tr>
+                  <tr>
+                    <td class="dvnPermissionsTableOption">
+                      <ice:outputText value="Cataloging Information and File Settings"/>
+                    </td>
+                    <td>
+                      <ice:selectOneMenu partialSubmit="true" value="#{StudyPermissionsPage.editStudyPermissions.studyRestriction}">
+                        <f:selectItem itemLabel="Restricted" itemValue="Restricted"/>
+                        <f:selectItem itemLabel="Public" itemValue="Public"/>
+                      </ice:selectOneMenu>
+
+                      <ice:outputText styleClass="vdcHelpText" value="If this setting is public, files can still be restricted on the Files tab of this page."/>
+                    </td>
+                  </tr>
+                  <ui:fragment rendered="#{StudyPermissionsPage.editStudyPermissions.studyRestriction == 'Restricted'}">
+                  <tr>
+                    <td class="dvnPermissionsTableOption dvnPermissionsStackedCells">
+                      <ice:outputText value="User Restricted Study Settings"/>
+                    </td>
+                    <td class="dvnPermissionsStackedCells">
+                      <ice:outputText id="outputText7" value="Username/Group Name: "/>
+                      <ice:inputText id="newStudyUser" binding="#{StudyPermissionsPage.studyUserInputText}" value="#{StudyPermissionsPage.newStudyUser}"/>
+                      <ice:commandButton value="Add" actionListener="#{StudyPermissionsPage.addStudyPermission}"/>
+                      <ice:message styleClass="errorMessage" for="newStudyUser"/>
+                      <br/>
+                      <ice:outputText styleClass="vdcHelpText" value="Enter username/group to allow restricted study access."/>
+                    </td>
+                  </tr>
+                  </ui:fragment>
+                  <ui:fragment rendered="#{!empty StudyPermissionsPage.editStudyPermissions.studyPermissions}">
+                  <tr>
+                    <td colspan="2">
+                        <ice:commandButton value="Remove" actionListener="#{StudyPermissionsPage.removeStudyUserGroup}"/>
+
+                        <ice:outputText styleClass="vdcHelpText" value=" Select multiple users/groups by checking the boxes below."/>
+                        <ice:dataTable cellspacing="0" cellpadding="0" width="100%"
+                                       value="#{StudyPermissionsPage.editStudyPermissions.studyPermissions}" var="currentRow"
+                                       headerClass="list-header-left" columnWidths="10%,90%" rowClasses="list-row-even, list-row-odd">
+                          <ice:column>
+                            <ice:selectBooleanCheckbox value="#{currentRow.checked}"/>
+                          </ice:column>
+                          <ice:column>
+                            <f:facet name="header">
+                              <ice:outputText id="access_header" value="User/Group Access"/>
+                            </f:facet>
+                            <ice:outputLink rendered="#{currentRow.user != null}" value="/dvn#{VDCRequest.currentVDCURL}/faces/login/AccountPage.xhtml?userId=#{currentRow.user.id}&amp;vdcId=#{VDCRequest.currentVDCId}">
+                              <ice:outputText value="#{currentRow.user.userName}"/>
+                            </ice:outputLink>
+                            <ice:outputLink rendered="#{currentRow.group != null}" value="/dvn/faces/networkAdmin/ViewUserGroupPage.xhtml?userGroupId=#{currentRow.group.id}">  
+                              <ice:outputText value="#{currentRow.group.name}"/>
+                            </ice:outputLink>
+                          </ice:column>
+                        </ice:dataTable>
+                    </td>
+                  </tr>
+                  </ui:fragment>
+                </table>
+                </ice:panelTab>
+                <ice:panelTab label="Files">
+                <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+                    <div class="dvnMsgBlockContainer">
+                      <ice:outputText value="#{bundlePageInfo.manageStudyPermissionsFilesHelp}" escape="false"/>
+                    </div>
+                </div>
+                <table class="dvnPermissionsTable" cellspacing="0" cellpadding="0" border="0">
+                  <tr><td colspan="2" class="dvnPermissionsTableHeader"><ice:outputText value="File Permission Settings"/></td></tr>
+                  <tr>
+                    <td class="dvnPermissionsTableOption">
+                      <ice:outputText value="Restricted File Settings"/>
+                    </td>
+                    <td>
+                      <ice:selectBooleanCheckbox value="#{StudyPermissionsPage.editStudyPermissions.study.requestAccess}"/>
+                      <ice:outputText value=" Allow users to request access to restricted files for this study (you will get an email notification for each request)."/>
+                    </td>
+                  </tr>
+                </table>
+                <div jsfc="ice:panelGroup" rendered="#{!empty StudyPermissionsPage.editStudyPermissions.studyRequests}">
+                    <table class="dvnPermissionsTable" cellspacing="0" cellpadding="0" border="0">
+                      <tr><td colspan="1" class="dvnPermissionsTableHeader"><ice:outputText value="Individual File Access Requests"/></td></tr>
+                    </table>
+                </div>
+              <div jsfc="ice:panelGroup" rendered="#{!empty StudyPermissionsPage.editStudyPermissions.studyRequests}">
+                <table class="dvnPermissionsTable" cellspacing="0" cellpadding="0" border="0">
+                  <tr>
+                    <td colspan="3">
+                      <ice:graphicImage value="/resources/images/icon_info.gif" styleClass="dvn_icon"/>
+                      <ice:outputText styleClass="vdcHelpText" value=" Approve or deny user request for access to restricted files."/>
+                      <ice:dataTable cellpadding="0" cellspacing="0" width="100%"
+                                     headerClass="list-header-left" rowClasses="list-row-even, list-row-odd"
+                                     columnClasses="vdcColPadded, vdcColPadded" columnWidths="28%,15%,57%"
+                                     value="#{StudyPermissionsPage.editStudyPermissions.studyRequests}" var="currentRow">
+                        <ice:column>
+                          <f:facet name="header">
+                            <ice:outputText id="processRequest_header" value="Process Selected Requests  "/>
+                            <ice:commandButton value="Update" actionListener="#{StudyPermissionsPage.updateRequests}"/>
+                          </f:facet>
+                          <ice:selectOneRadio value="#{currentRow.accept}">
+                            <f:selectItem itemLabel="Approve" itemValue="true"/>
+                            <f:selectItem itemLabel="Deny" itemValue="false"/>
+                          </ice:selectOneRadio>
+                        </ice:column>
+                        <ice:column>
+                          <f:facet name="header">
+                            <ice:outputText id="userRequest_header" value="User Name"/>
+                          </f:facet>
+                          <ice:outputLink value="/dvn#{VDCRequest.currentVDCURL}/faces/login/AccountPage.xhtml?userId=#{currentRow.studyRequest.vdcUser.id}&amp;vdcId=#{VDCRequest.currentVDCId}" >
+                            <ice:outputText value="#{currentRow.studyRequest.vdcUser.userName}"/>
+                          </ice:outputLink>
+                        </ice:column>
+                        <ice:column>
+                          <f:facet name="header">
+                            <ice:outputText id="accessRequest_header" value="Restricted File Access Requests"/>
+                          </f:facet>
+                            <ice:outputText value="#{currentRow.fileName}"/>
+                        </ice:column>
+                      </ice:dataTable>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+                <table class="dvnPermissionsTable" cellspacing="0" cellpadding="0" border="0">
+                  <tr><td class="dvnPermissionsTableHeader"><ice:outputText value="Individual File Permission Settings"/></td></tr>
+                  <tr>
+                      <td>
+                        <ice:graphicImage value="/resources/images/icon_info.gif" styleClass="dvn_icon"/>
+                        <ice:outputText value=" Choose to either: allow access by Username/Group Name or set restricted File Permission." escape="false"/>
+                        <div jsfc="ice:panelGroup" styleClass="dvnManageTableTop">
+                            <div jsfc="ice:panelGroup" rendered="#{VDCRequest.currentVDC.filesRestricted}">
+                                <p>
+                                    <ice:graphicImage value="/resources/images/icon_warning.18.png" styleClass="dvn_icon"/>
+                                    <ice:outputText styleClass="vdcHelpText" value=" The files have been restricted at the dataverse level. Restrictions defined here will be overridden by the dataverse level restriction." escape="false"/>
+                                </p>
+                            </div>
+                            <div jsfc="ice:panelGroup" styleClass="dvn_margin12 dvnInformationMessage">
+                                <div class="dvnMsgBlockContainer">
+                                    <p><ice:outputText value="Enter username or group name to grant restricted file access." escape="false"/></p>
+                                </div>
+                            </div>
+                            <div class="dvnFormPaddingNoTop">
+                                <ice:outputText value="Username/Group Name: "/>
+                                <ice:inputText value="#{StudyPermissionsPage.newFileUser}" id="newFileUser" binding="#{StudyPermissionsPage.fileUserInputText}"/>
+                                
+                                <ice:commandButton value="Grant Access" actionListener="#{StudyPermissionsPage.addFilePermission}"/>
+                                <ice:message styleClass="errorMessage" for="newFileUser"/>
+                            </div>
+                            <div jsfc="ice:panelGroup" styleClass="dvn_margin12 dvnInformationMessage">
+                                <div class="dvnMsgBlockContainer">
+                                    <p><ice:outputText value="Select file(s) using the checkboxes below, to update file access permissions." escape="false"/></p>
+                                </div>
+                            </div>
+                            <div class="dvnFormPaddingNoTop">
+                                <ice:outputText value="File Permission: "/>
+                                <ice:selectOneMenu value="#{StudyPermissionsPage.selectFilePermission}">
+                                    <f:selectItem itemLabel="Choose permission..." itemValue=""/>
+                                    <f:selectItem itemLabel="Restricted" itemValue="Restricted"/>
+                                    <f:selectItem itemLabel="Public" itemValue="Public"/>
+                                </ice:selectOneMenu>
+                                
+                                <ice:commandButton value="Update Permissions" actionListener="#{StudyPermissionsPage.addFilePermission}"/>
+                                <ice:message styleClass="errorMessage" for="newFileUser"/>
+                            </div>
+                            <div jsfc="ice:panelGroup" styleClass="dvnManageTableControls">
+                                <div>Select<br/>Files</div>
+                                <div>
+                                    <ice:outputText value="Filter: "/>
+                                    <ice:inputText binding="#{StudyPermissionsPage.inputFilterTerm}"
+                                                                size="50" maxlength="255"
+                                                                onkeyup="delayedRequest(form,this,event);"/> 
+                                    <ice:selectBooleanCheckbox id="showAllStudyFiles" binding="#{StudyPermissionsPage.viewFileCheckBox}" value="#{StudyPermissionsPage.viewAllFiles}" valueChangeListener="#{StudyPermissionsPage.changeViewFiles}" onclick="submit()"/>
+                                    <ice:outputText id="outputText3" value="Show all files, from all study versions"/>
+                                </div>
+                            </div>
+                        </div>
+                        <ice:dataTable cellpadding="0" cellspacing="0" width="100%" 
+                                     headerClass="list-header-left" columnClasses="dvnStudyFilePermTblChk, vdcColPadded, vdcColPadded, vdcColPadded, vdcColPadded"
+                                     styleClass="dvnStudyPermissionsFileDetails" rowClasses="list-row-even, list-row-odd" 
+                                     columnWidths="7%,20%,36%,12%,9%,16%"
+                                     value="#{StudyPermissionsPage.editStudyPermissions.fileDetails}" var="currentRow">
+                        <ice:column id="fileuser_col1">
+                          <f:facet name="header">
+                            <ice:selectBooleanCheckbox id="selectAllCheckbox" onchange="updateAllCheckboxes(this);"/>
+                          </f:facet>
+                          <ice:selectBooleanCheckbox id="filePermissionCheckbox" value="#{currentRow.checked}"/>
+                        </ice:column>
+                        <ice:column>
+                          <f:facet name="header">
+                            <ice:outputText id="fileuser_tcol1" value="Category Name"/>
+                          </f:facet>
+                          <ice:outputText value="#{currentRow.fileMetadata.category}"/>
+                        </ice:column>
+                        <ice:column id="fileuser_col2">
+                          <f:facet name="header">
+                            <ice:outputText id="fileuser_tcol2" value="File Name"/> 
+                          </f:facet>
+                          <ice:outputText value="#{currentRow.fileMetadata.label}"/>
+                        </ice:column>
+                        <ice:column id="fileuser_col5">
+                          <f:facet name="header">
+                            <ice:outputText id="fileuser_tcol5" value="Study Version(s)"/>
+                          </f:facet>
+                            <ice:outputText value="#{currentRow.fileVersions}"/>
+                        </ice:column>
+                        <ice:column id="fileuser_col3">
+                          <f:facet name="header">
+                            <ice:outputText id="fileuser_tcol3" value="Permission"/>
+                          </f:facet>
+                          <ice:outputText value="#{currentRow.fileRestriction}"/>
+                        </ice:column>
+                        <ice:column id="fileuser_col4">
+                          <f:facet name="header">
+                            <ice:outputText id="fileuser_tcol4" value="Restricted File Access"/>
+                          </f:facet>
+                          <ice:commandLink action="#{StudyPermissionsPage.toggleFileAccessPopup(currentRow.studyFile.id)}" rendered="#{!empty currentRow.filePermissions and currentRow.fileRestriction != 'Public'}">
+                              <ice:outputText value="Edit User/Group Access"/>
+                          </ice:commandLink>
+                          <ice:outputText value="No Access Granted" rendered="#{empty currentRow.filePermissions and currentRow.fileRestriction != 'Public'}"/>
+                          <ice:outputText value="N/A" rendered="#{currentRow.fileRestriction == 'Public'}"/>
+                        </ice:column>
+                        <!-- Commented ice:column - see version prior to 2/1/08 to find changes, MC-->
+                      </ice:dataTable>
+                    </td>
+                  </tr>
+                </table>
+                </ice:panelTab>
+                </ice:panelTabSet>
+              <div class="dvnFormPadding dvnFormMargin">
+                <ice:commandButton value="Save" action="#{StudyPermissionsPage.save}"/>
+                <ice:commandButton value="Cancel" action="#{StudyPermissionsPage.cancel}"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- file popup. -->
+        <ice:panelPopup id="restrictedFileAccessPopup" styleClass="dvnStudyFilePermPopUp"
+                        draggable="false"
+                        visible="#{StudyPermissionsPage.showFileAccessPopup}"
+                        autoCentre="true"
+                        modal="true"
+                        style="#{VDCRequest.displayInFrame ? 'top:50px !important;' : ''}">
+            <f:facet name="header">
+                <ice:panelGrid id="autoCentPanelGrid"
+                               width="100%" cellpadding="0"
+                               cellspacing="0" columns="2"
+                               columnClasses="none,popupButton">
+                    <ice:outputText value="Restricted File Access"/>
+                </ice:panelGrid>
+            </f:facet>
+            <f:facet name="body">
+                <ice:panelGrid id="autoCentContent"
+                               width="100%" cellpadding="0"
+                               cellspacing="0" columns="1"
+                               styleClass="popupModalBody" rowClasses="popupModVerNotText,popupModVerNotLabel,popupModVerNotField,popupModVerNotForm">
+
+                    <ice:outputText value="Select user(s)/group(s) to remove their access to restricted files."/>
+                    <div jsfc="ice:panelGroup">
+                        <ice:dataTable cellpadding="0" cellspacing="0" width="100%"
+                                     scrollable="true" scrollHeight="140px"
+                                     headerClass="list-header-left" columnClasses="dvnStudyFilePermTblChk, vdcColPadded" columnWidths="80px,82%"
+                                     styleClass="dvnStudyPermissionsUsersPopUp" rowClasses="list-row-even, list-row-odd"
+                                     value="#{StudyPermissionsPage.restrictedFilePermissions}" var="currPermission">
+                            <ice:column>
+                              <f:facet name="header">
+                                <ice:outputText value="Select"/>
+                              </f:facet>
+                              <ice:selectBooleanCheckbox value="#{currPermission.checked}"/>
+                            </ice:column>
+                            <ice:column>
+                              <f:facet name="header">
+                                <ice:outputText value="Username"/>
+                              </f:facet>
+                              <ice:outputLink rendered="#{currPermission.user!=null}" value="/dvn#{VDCRequest.currentVDCURL}/faces/login/AccountPage.xhtml?userId=#{currPermission.user.id}">
+                                <ice:outputText value="#{currPermission.user.userName}"/>
+                              </ice:outputLink>
+                              <ice:outputText value="#{currPermission.group.name}" rendered="#{currPermission.group!=null}"/>
+                            </ice:column>
+                        </ice:dataTable> 
+                    </div>
+                    <div jsfc="ice:panelGroup" styleClass="dvnFormPadding">
+                        <ice:selectBooleanCheckbox id="genericCheckBoxes" value="#{StudyPermissionsPage.removeChecked}" partialSubmit="false"/>
+                        <ice:outputText styleClass="dvnStudyFilePermRemoveChkBxLabel" value=" Remove selected user(s) from &lt;strong&gt;ALL&lt;/strong&gt; restricted files associated with this study." escape="false"/>
+                    </div>
+                    <div jsfc="ice:panelGroup" styleClass="dvnFormPadding dvnFormMargin">
+                        <ice:commandButton id="autoCentPopupOk"                                           
+                                           value="Remove" action="#{StudyPermissionsPage.removeFilePermissions()}"/>
+                        <ice:commandButton id="autoCentPopupCancel"
+                                           action="#{StudyPermissionsPage.toggleFileAccessPopup(0)}"
+                                           value="Cancel" onclick="removeCheckBoxes('form1:restrictedFileAccessPopup-tr');"/>
+                    </div>
+                </ice:panelGrid>
+            </f:facet>
+        </ice:panelPopup>
+        <!-- end of file popup.-->
+      </ice:form>
+    </ui:define>
+  </ui:composition>
+</body>
+</html>

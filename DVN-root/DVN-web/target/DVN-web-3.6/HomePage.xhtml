@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+      xmlns:ice="http://www.icesoft.com/icefaces/component">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    </h:head>
+    <h:body>
+        <ui:composition template="/template.xhtml">
+            <ui:param name="pageTitle" value="#{VDCRequest.dataversePageTitle}"/>
+            <ui:define name="metadata">
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{homePage.preRenderView}"/>
+                    <f:event type="preRenderView" listener="#{BasicSearchFragment.preRenderView}"/>
+                </f:metadata>
+            </ui:define>
+            <ui:define name="body">
+                <f:loadBundle basename="Bundle" var="bundle"/>
+                <f:loadBundle basename="BundleAnalysis" var="bundleAnalysis"/>
+                <ice:form id="form1">
+                    <ice:inputHidden id="vdcId" value="#{VDCRequest.currentVDCId}"/>
+                    <!-- Success Message -->
+                    <div jsfc="ice:panelGroup" styleClass="#{homePage.msg.styleClass}" rendered="#{!empty homePage.msg.messageText}">
+                        <ice:outputText id="statusMessage" escape="false" value="#{homePage.msg.messageText}"/>
+                    </div>
+                    <!-- Search -->
+                    <div id="dvnHomePgSearch">
+                        <div class="dvnSearchBlock">
+                            <ui:include src="BasicSearchFragment.xhtml"></ui:include>
+
+                            <div class="dvn_searchlinks">
+                                <ice:outputLink value="/dvn#{VDCRequest.currentVDCURL}/faces/AdvSearchPage.xhtml">
+                                    <ice:outputText value="Advanced Search"/>
+                                </ice:outputLink>
+                                <ice:outputLink value="http://guides.thedata.org/book/search" target="_blank">
+                                    <ice:outputText value="Tips"/>
+                                </ice:outputLink>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Search End -->
+                    <!-- Main Section starts here -->
+                    <div id="dvn_mainSection">
+                        <div jsfc="ice:panelGroup" styleClass="dvn_hmpgMainMessage" rendered="#{(VDCRequest.currentVdcNetwork.displayAnnouncements == true) and (VDCRequest.currentVDC == null) }" id="networkAnnouncementsHeaderPanel" >
+                            <ice:outputText id="networkAnnouncementsMessages" escape="false" value="#{homePage.parsedNetworkAnnouncements}"/>
+                        </div>
+                    </div>
+                    <!-- Main Section ends here -->
+                    <div id="hiddenDiv">
+                        <ice:outputText value="#{NetworkStatsBean.autoLoad}"/>
+                    </div>
+                    <!-- ***************** NETWORK HOMEPAGE CONTENT *************************  -->
+                    
+                    <!-- EMPTY DVN -->
+                    <div jsfc="ice:panelGroup" styleClass="dvnHmpgGroupNoDVs" rendered="#{homePage.vdcUIListSize == 0 and (VDCRequest.currentVdcNetwork.id == VDCRequest.vdcNetwork.id)}">
+                        <p><ice:outputText value="#{bundlePageInfo.emptyDVNMessage}"/></p>
+                        <div jsfc="ice:panelGroup" styleClass="dvnHmpgEmptyDVNActions" rendered="#{VDCSession.loginBean.networkAdmin and !VDCRequest.readOnlyDatabase}">
+                            <ul>
+                                <li>
+                                    <ice:outputText value="Click the "/>
+                                    <ice:outputLink value="/dvn/faces/networkAdmin/NetworkOptionsPage.xhtml">
+                                        <ice:outputText value="Options icon"/>
+                                    </ice:outputLink>
+                                    <ice:outputLink value="/dvn/faces/networkAdmin/NetworkOptionsPage.xhtml"><img src="/dvn/resources/images/navicon_options.jpg" alt="Options"/></ice:outputLink>
+                                    <ice:outputText value=" in the menu bar, to administer your Dataverse Network."/>
+                                </li>
+                                <li>
+                                    <ice:outputLink value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/AddSitePage.xhtml">
+                                        <ice:outputText value="Create a Dataverse"/>
+                                    </ice:outputLink>
+                                    <ice:outputText value=" in order to create studies and upload data."/>
+                                </li>
+                                <li>
+                                    <ice:outputLink value="/dvn/faces/networkAdmin/NetworkOptionsPage.xhtml?tab=settings&amp;tab2=customization">
+                                        <ice:outputText value="Customize the layout"/>
+                                    </ice:outputLink>
+                                    <ice:outputText value=" to match the branding of your site."/>
+                                </li>
+                            </ul>                   
+                        </div>
+                    </div>
+                    
+                    <!-- EMPTY Subnetwork -->
+                    <div jsfc="ice:panelGroup" styleClass="dvnHmpgGroupNoDVs" rendered="#{homePage.vdcUIListSize == 0 and (VDCRequest.currentVdcNetwork.id != VDCRequest.vdcNetwork.id)}">
+                        <p><ice:outputText value="#{bundlePageInfo.emptySubnetworkMessage}"/></p>
+                        <div jsfc="ice:panelGroup" styleClass="dvnHmpgEmptyDVNActions" rendered="#{VDCSession.loginBean.networkAdmin and !VDCRequest.readOnlyDatabase}">
+                            <ul>
+                                <li>
+                                    <ice:outputText value="Click the "/>
+                                    <ice:outputLink value="/dvn/faces/networkAdmin/NetworkOptionsPage.xhtml?tab=subnetworks">
+                                        <ice:outputText value="Options icon"/>
+                                    </ice:outputLink>
+                                    <ice:outputLink value="/dvn/faces/networkAdmin/NetworkOptionsPage.xhtml"><img src="/dvn/resources/images/navicon_options.jpg" alt="Options"/></ice:outputLink>
+                                    <ice:outputText value=" in the menu bar, to administer your Subnetwork."/>
+                                </li>
+                                <li>
+                                    <ice:outputLink value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/AddSitePage.xhtml">
+                                        <ice:outputText value="Create a Dataverse"/>
+                                    </ice:outputLink>
+                                    <ice:outputText value=" in order to create studies and upload data."/>
+                                </li>
+                                <li>
+                                    <ice:outputLink value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/networkAdmin/EditSubnetworkPage.xhtml?edit=true">
+                                        <ice:outputText value="Customize the layout"/>
+                                    </ice:outputLink>
+                                    <ice:outputText value=" to match the branding of your site."/>
+                                </li>
+                            </ul>                   
+                        </div>
+                    </div>
+                    
+                    <!-- Dataverses + Studies Container -->
+                    <div jsfc="ice:panelGroup" rendered="#{homePage.vdcUIListSize != 0}" styleClass="dvnHmpgColumnBlock">
+                            <!-- Dataverses -->
+                            <div class="dvnHmpgColumnDataverses">
+                                
+                                <div class="dvnHmpgColumnHeaderBlock">
+                                    <h1 class="dvnHmpgColumnHeader">Dataverses</h1>
+                                    <div jsfc="ice:panelGroup" id="createDataverse" styleClass="dvnCreateActionBox dvnCreateDataverse" rendered="#{VDCRequest.vdcNetwork.allowCreateRequest and !VDCRequest.readOnlyDatabase}">
+                                        <ice:outputLink value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/login/CreatorRequestInfoPage.xhtml">
+                                            <ice:outputText value="Create Dataverse"/>
+                                        </ice:outputLink>
+                                    </div>
+                                    <div class="dvnHmpgColumnTotals">
+                                        <ice:outputText styleClass="dvn_totalsValue" value="#{homePage.vdcUIListSize}"/>
+                                        <ice:outputText value=" Dataverses"/>
+                                    </div>
+                                </div>
+                                <div class="dvnHmpgColumnDefinition">
+                                    <ice:graphicImage value="/resources/images/icon_information.18.png" styleClass="dvn_icon"/>
+                                    <ice:outputText styleClass="vdcHelpText" value="#{bundlePageInfo.networkHmpgDVDefinition}" escape="false"/>
+                                </div>
+                                
+                                <!-- CLASSIFICATIONS WIDGET -->
+
+                                <div jsfc="ice:panelGroup" rendered="#{!empty homePage.accordionItemBeans}">
+                                    <div id="dvClassificationMenu" class="xtraMenu basic">
+
+                                        <ui:repeat value="#{homePage.accordionItemBeans}" var="menuItems">
+                                            <ui:fragment rendered="#{!empty(menuItems.childItems)}">
+                                                <h3 class="head">
+                                                    <ice:outputText value="Browse Dataverses By #{menuItems.name}"/>
+                                                </h3>
+                                                <ul class="head-top">
+                                                <ui:repeat rendered="#{menuItems != null}"
+                                                        value="#{menuItems.childItems}"
+                                                        var="item">
+                                                    <!-- HAS SUBNODE DESCENDANTS -->
+                                                    <ui:fragment rendered="#{!empty(item.xtraItems)}">
+                                                        <li id="xtraMenu#{item.id}">
+                                                            <h4 class="head">
+                                                                <ice:outputLink styleClass="head" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/BrowseDataversesPage.xhtml?groupId=#{item.id}"                                                                                                                                                                                                                    >
+                                                                    <ice:outputText value="#{item.name}"/>
+                                                                </ice:outputLink>
+                                                                <ice:outputText value=" (#{item.numberOfDataverses})" styleClass="dvnHmpgClassificationCount"/>
+                                                            </h4>
+                                                            <ui:fragment rendered="#{item.xtraItems != null and !empty(item.xtraItems)}">
+                                                                <ul>
+                                                                    <ui:repeat rendered="#{item.xtraItems != null}"
+                                                                            value="#{item.xtraItems}"
+                                                                            var="xtraItems">
+                                                                        <li>
+                                                                            <ice:outputLink styleClass="lastNode" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/BrowseDataversesPage.xhtml?groupId=#{xtraItems.id}">
+                                                                                <ice:outputText value="#{xtraItems.name}"/>
+                                                                            </ice:outputLink>
+                                                                            <ice:outputText value=" (#{xtraItems.numberOfDataverses})" styleClass="dvnHmpgClassificationCount"/>
+                                                                        </li>
+                                                                    </ui:repeat>
+                                                                </ul>
+                                                            </ui:fragment>
+                                                        </li>
+                                                    </ui:fragment>
+                                                    <!-- END HAS SUBNODE DESCENDANTS -->
+                                                    <!-- HAS NO SUBNODE DESCENDANTS -->
+                                                    <ui:fragment rendered="#{empty(item.xtraItems)}">
+                                                        <li>
+                                                            <ice:outputLink styleClass="lastNode" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/BrowseDataversesPage.xhtml?groupId=#{item.id}">
+                                                                <ice:outputText value="#{item.name}"/>
+                                                            </ice:outputLink>
+                                                            <ice:outputText value=" (#{item.numberOfDataverses})" styleClass="dvnHmpgClassificationCount"/>
+                                                        </li>
+                                                    </ui:fragment>
+                                                    <!-- END HAS NO SUBNODE DESCENDANTS -->
+                                                </ui:repeat>
+                                                </ul>
+                                            </ui:fragment>
+                                        </ui:repeat>
+
+                                    </div>
+                                </div>
+                                
+                                <!-- RECENTLY RELEASED WIDGET -->
+
+                                <div jsfc="ice:panelGroup" styleClass="dvnHmpgColumnWidget" rendered="#{!empty homePage.mostRecentlyReleasedDVs}">
+                                    <div class="dvnHmpgColumnWidgetHeader">Recently Released Dataverses</div>
+                                    <ice:dataTable headerClass="groupRow" id="recentDataverseList"
+                                                rendered="#{!empty(homePage.mostRecentlyReleasedDVs)}"
+                                                rows="10" width="100%" 
+                                                styleClass="dvnHmpgDataverseWidgetTable"
+                                                value="#{homePage.mostRecentlyReleasedDVs}" var="vdcUI">
+                                        <ice:column>
+                                            <div>
+                                                <ice:outputLink styleClass="dvnHmpgDvNameLink dvnInlineHelpTip" id="dataverse_linkSub" value="/dvn/dv/#{vdcUI.vdc.alias}"
+                                                                title="#{vdcUI.name} Dataverse - Released: #{vdcUI.releaseDate}
+                                                                        #{!empty(vdcUI.vdc.affiliation) ? '&lt;br/&gt;Affilitation:  ' : ''} #{vdcUI.vdc.affiliation}
+                                                                        #{!empty(vdcUI.vdc.dvnDescription) ? '&lt;br/&gt;Description: ' : ''} #{vdcUI.vdc.dvnDescription}">
+                                                    <ice:outputText value="#{vdcUI.name}"/>
+                                                </ice:outputLink>
+                                                <ice:outputText value="#{vdcUI.releaseDate}" styleClass="dvnHmpgWidgetFloat"/>
+                                            </div>
+                                        </ice:column>
+                                    </ice:dataTable>
+                                    <div class="dvnHmpgColumnWidgetViewMoreBlock">
+                                        <ice:outputLink value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/BrowseDataversesPage.xhtml?initialSort=Released" >
+                                            <ice:outputText value="View More &gt;"/>                          
+                                        </ice:outputLink>
+                                    </div>
+                                </div>
+                                
+                                <!-- SUBNETWORK WIDGET -->
+                    
+                                <div jsfc="ice:panelGroup" styleClass="dvnHmpgColumnWidget dvnHmpgWidgetSlider" rendered="#{VDCRequest.currentSubnetwork == null and !empty homePage.vdcSubnetworks}">
+                                    <!-- <div class="dvnHmpgColumnWidgetHeader">Dataverse Subnetworks</div> -->
+                                    
+                                    <div id="dvnHmpgSubnetworkWidget">
+                                        
+                                    <ui:repeat rendered="#{!empty(homePage.vdcSubnetworks)}"
+                                                        value="#{homePage.vdcSubnetworks}"
+                                                        var="vdcSubnetwork">
+                                        <div class="content">
+                                            <div jsfc="ice:panelGroup" styleClass="dvnHmpgSubnetworkLogo" rendered="#{!empty vdcSubnetwork.vdcNetwork.logo}">
+                                                <ice:outputLink id="subnetwork_imglink" value="/dvn/dataverses/#{vdcSubnetwork.vdcNetwork.urlAlias}" title="View #{vdcSubnetwork.vdcNetwork.name} Dataverses within #{VDCRequest.vdcNetwork.name} Dataverse Network">
+                                                    <ice:graphicImage value="#{homePage.getSubNetworkLogoUrl(vdcSubnetwork.vdcNetwork.logo)}" alt="#{vdcSubnetwork.vdcNetwork.name} Dataverses"/>
+                                                </ice:outputLink>
+                                            </div>
+                                            <div class="dvnHmpgSubnetworkInfo">
+                                                <ice:outputLink styleClass="dvnHmpgSubnetworkNameLink" id="subnetwork_textlink" value="/dvn/dataverses/#{vdcSubnetwork.vdcNetwork.urlAlias}"                 
+                                                    title="View #{vdcSubnetwork.vdcNetwork.name} Dataverses within #{VDCRequest.vdcNetwork.name} Dataverse Network">
+                                                    <ice:outputText value="#{vdcSubnetwork.vdcNetwork.name} Dataverses"/>
+                                                </ice:outputLink>
+                                                <ice:outputText styleClass="dvnHmpgSubnetworkDVCount" value="Dataverses: #{vdcSubnetwork.vdcCount} "/>
+                                                <ice:outputText value="#{vdcSubnetwork.vdcNetwork.shortDescription}"/>
+                                            </div>
+                                        </div>
+                                    </ui:repeat>
+                                        
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- Dataverses End -->
+                            
+                            <!-- Studies -->
+                            <div class="dvnHmpgColumnStudies">
+                                
+                                <div class="dvnHmpgColumnHeaderBlock">
+                                    <h1 class="dvnHmpgColumnHeader">Studies</h1>
+                                    <div jsfc="ice:panelGroup" id="createStudy" styleClass="dvnCreateActionBox dvnCreateStudy" rendered="#{VDCSession.loginBean.user!=null and homePage.userVDCCount > 1 and !VDCRequest.readOnlyDatabase}">
+                                        <ice:outputLink value="/dvn/faces/admin/ChooseDataverseForCreateStudy.xhtml" rendered="#{VDCSession.loginBean.user!=null and homePage.userVDCCount > 1 and !VDCRequest.readOnlyDatabase}">
+                                            <ice:outputText value="#{bundlePageInfo.createStudyButton}"/>
+                                        </ice:outputLink>
+                                    </div>
+                                    <div jsfc="ice:panelGroup" id="createStudyOne" styleClass="dvnCreateActionBox dvnCreateStudy" rendered="#{VDCSession.loginBean.user!=null and homePage.userVDCCount == 1 and !VDCRequest.readOnlyDatabase}">
+                                        <ice:outputLink value="/dvn/dv/#{homePage.soleVDCAlias}/faces/study/EditStudyPage.xhtml" rendered="#{VDCSession.loginBean.user!=null and homePage.userVDCCount == 1 and !VDCRequest.readOnlyDatabase}">
+                                            <ice:outputText value="#{bundlePageInfo.createStudyButton}"/>
+                                        </ice:outputLink>
+                                    </div>
+                                    <div class="dvnHmpgColumnTotals">
+                                        <ice:outputText styleClass="dvn_totalsValue" value="#{homePage.studyCount}"/>
+                                        <ice:outputText value=" Studies, "/>
+                                        <ice:outputText styleClass="dvn_totalsValue" value="#{homePage.fileCount}"/>
+                                        <ice:outputText value=" Files, "/>
+                                        <ice:outputText styleClass="dvn_totalsValue" value="#{homePage.downloadCount}"/>
+                                        <ice:outputText value=" Downloads" />
+                                    </div>
+                                </div>
+                                <div class="dvnHmpgColumnDefinition">
+                                    <ice:graphicImage value="/resources/images/icon_information.18.png" styleClass="dvn_icon"/>
+                                    <ice:outputText styleClass="vdcHelpText" value="#{bundlePageInfo.networkHmpgStudyDefinition}" escape="false"/>
+                                </div>
+
+                                <div class="dvnHmpgColumnWidget">
+                                    <div class="dvnHmpgColumnWidgetHeader">Recently Released Studies</div>
+                                    <ice:dataTable rows="10" headerClass="list-header" id="studyListTable1" width="100%"
+                                                styleClass="dvnHmpgStudyWidgetTable" value="#{homePage.recentStudies}" var="studyUI">
+                                        <ice:column id="column1">
+                                            <div jsfc="ice:panelGroup" styleClass="#{!studyUI.study.restricted ? 'dvn_nostyle' : (studyUI.studyRestricted ? 'dvnStudyRestricted' : 'dvnStudyPublic')}" id="groupPanel1">
+                                                <ice:outputLink styleClass="dvnInlineHmpgWidgetInfo" id="hyperlink3" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/study/StudyPage.xhtml?globalId=#{studyUI.study.globalId}"
+                                                                title="#{studyUI.metadata.title} *!* Release Date: #{studyUI.releaseTime} &lt;br/&gt; Number of Files: #{empty studyUI.numberOfFiles ? '0' : studyUI.numberOfFiles} &lt;br/&gt; Number of Downloads: #{studyUI.downloadCount} &lt;br/&gt; Original Dataverse: #{studyUI.study.owner.name} Dataverse">
+                                                    <ice:graphicImage styleClass="dvnHmpgStudyFileIcon" url="/resources/images/icon_analyze.gif" title="View and Analyze study files" rendered="#{studyUI.files and studyUI.subsettable}"/>
+                                                    <ice:graphicImage styleClass="dvnHmpgStudyFileIcon" url="/resources/images/icon_files.gif" title="View study files" rendered="#{studyUI.files and !studyUI.subsettable}"/>
+                                                    <ice:outputText id="hyperlink3aText" value="#{studyUI.metadata.title}"/>
+                                                </ice:outputLink>
+                                                <ice:outputText id="hyperlink3bText" styleClass="dvnStudyListStudyAuthor" value=" by #{studyUI.authors}" rendered="#{studyUI.authors != null and studyUI.authors != ''}"/>
+                                                <ice:outputText value="#{studyUI.releaseTime}" styleClass="dvnHmpgWidgetFloat"/>
+                                            </div>
+                                        </ice:column>
+                                    </ice:dataTable>
+                                    <div class="dvnHmpgColumnWidgetViewMoreBlock">
+                                        <ice:outputLink value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/StudyListingPage.xhtml?mode=100&amp;sort=releaseTime" id="hyperlinkBrowseStudiesReleased">
+                                            <ice:outputText value="View More &gt;"/>
+                                        </ice:outputLink>
+                                    </div>
+                                </div>
+                                <div class="dvnHmpgColumnWidget">
+                                    <div class="dvnHmpgColumnWidgetHeader">Most Downloaded Studies</div>
+                                    <ice:dataTable rows="10" headerClass="list-header" id="studyListTable2" width="100%"
+                                                styleClass="dvnHmpgStudyWidgetTable" value="#{homePage.mostDownloadedStudies}" var="studyUI">
+                                        <ice:column id="column1">
+                                            <div jsfc="ice:panelGroup" styleClass="#{!studyUI.study.restricted ? 'dvn_nostyle' : (studyUI.studyRestricted ? 'dvnStudyRestricted' : 'dvnStudyPublic')}" id="groupPanel1">                 
+                                                <ice:outputLink styleClass="dvnInlineHmpgWidgetInfo" id="hyperlink3" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/study/StudyPage.xhtml?globalId=#{studyUI.study.globalId}"
+                                                                title="#{studyUI.metadata.title} *!* Release Date: #{studyUI.releaseTime} &lt;br/&gt; Number of Files: #{empty studyUI.numberOfFiles ? '0' : studyUI.numberOfFiles} &lt;br/&gt; Number of Downloads: #{studyUI.downloadCount} &lt;br/&gt; Original Dataverse: #{studyUI.study.owner.name} Dataverse">
+                                                    <ice:graphicImage styleClass="dvnHmpgStudyFileIcon" url="/resources/images/icon_analyze.gif" title="View and Analyze study files" rendered="#{studyUI.files and studyUI.subsettable}"/>
+                                                    <ice:graphicImage styleClass="dvnHmpgStudyFileIcon" url="/resources/images/icon_files.gif" title="View study files" rendered="#{studyUI.files and !studyUI.subsettable}"/>
+                                                    <ice:outputText id="hyperlink3aText" value="#{studyUI.metadata.title}"/>
+                                                </ice:outputLink>
+                                                <ice:outputText id="hyperlink3bText" styleClass="dvnStudyListStudyAuthor" value=" by #{studyUI.authors}" rendered="#{studyUI.authors != null and studyUI.authors != ''}"/>
+                                                <ice:outputText value="#{studyUI.downloadCount}" styleClass="dvnHmpgWidgetFloat"/>
+                                            </div>
+                                        </ice:column>
+                                    </ice:dataTable>
+                                    <div class="dvnHmpgColumnWidgetViewMoreBlock">
+                                        <ice:outputLink value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/StudyListingPage.xhtml?mode=100&amp;sort=downloadCount" id="hyperlinkBrowseStudiesDownloaded">
+                                            <ice:outputText value="View More &gt;"/>
+                                        </ice:outputLink>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <!-- Studies End -->
+                    </div>
+                    <!-- Dataverses + Studies Containter End -->
+                    
+                    <script type="text/javascript">
+                        // <![CDATA[
+                        jQuery(document).ready(function(){
+                            // accordion
+                            jQuery('.xtraMenu ul ul').hide();
+                            // classifications
+                            classificationsMenu();
+                            // subnetworks slider
+                            subnetworksSlider();
+                        });
+                        function classificationsMenu() {
+                            jQuery('.xtraMenu h4.head').bind('click', function(e){
+                                if(e.target != this) return;
+                                jQuery(this).next().toggle();
+                            })
+                        };
+                        function subnetworksSlider() {
+                            
+                            var dvColumnWidgetWidth = jQuery('.dvnHmpgWidgetSlider').width();
+                            jQuery('#dvnHmpgSubnetworkWidget, #dvnHmpgSubnetworkWidget > div').css('width', dvColumnWidgetWidth);
+                            
+                            jQuery('#dvnHmpgSubnetworkWidget').orbit({
+                                bullets: true,
+                                pauseOnHover: true,
+                                startClockOnMouseOut: true,
+                                advanceSpeed: 5000
+                            });
+                            
+                            var dvnSubnetworksCount = jQuery('#dvnHmpgSubnetworkWidget div.content').length;
+                            var orbitBulletsWidth = 12;
+                            var orbitBulletsMargin = orbitBulletsWidth * dvnSubnetworksCount;
+                            jQuery('ul.orbit-bullets').css('margin-left', '-' + orbitBulletsMargin + 'px');
+                        }
+                        // ]]>
+                    </script>
+                    
+                </ice:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

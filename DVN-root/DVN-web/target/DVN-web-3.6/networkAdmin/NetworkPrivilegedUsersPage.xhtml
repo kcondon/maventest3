@@ -1,0 +1,133 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+                      xmlns:h="http://java.sun.com/jsf/html"
+                      xmlns:f="http://java.sun.com/jsf/core"
+                      xmlns:jsp="http://java.sun.com/JSP/Page"
+                      xmlns:ice="http://www.icesoft.com/icefaces/component"
+                      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+                      jsfc="ice:panelGroup">
+        <input type="hidden" name="pageName" value="NetworkPrivilegedUsersPage"/>
+
+          <div>
+                    <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+                        <div class="dvnMsgBlockContainer">
+                          <ice:outputText value="#{bundlePageInfo.manageDvnPermissionsHelp}" escape="false"/>
+                        </div>
+                    </div>
+                    <table class="dvnPermissionsTable" cellspacing="0" cellpadding="0" border="0">
+                      <tr><td colspan="2" class="dvnPermissionsTableHeader"><ice:outputText value="Network Dataverse Permission Settings"/></td></tr>
+                      <tr>
+                        <td class="dvnPermissionsTableOption">
+                          <ice:outputText value="Creating a Dataverse"/>
+                        </td>
+                        <td>
+                          <ice:selectBooleanCheckbox id="checkbox1" value="#{OptionsPage.privileges.network.allowCreateRequest}"/>
+                          <ice:outputText id="outputText5" value=" Allow users to create a new Dataverse when they create an account."/>
+                        </td>
+                      </tr>
+                    </table>
+                    <table class="dvnPermissionsTable" cellspacing="0" cellpadding="0" border="0">
+                      <tr><td colspan="2" class="dvnPermissionsTableHeader"><ice:outputText value="Network User Permission Settings"/></td></tr>
+                      <tr>
+                        <td class="dvnPermissionsTableOption dvnPermissionsStackedCells">
+                          <ice:outputText value="Network Privileged Users"/>
+                        </td>
+                        <td class="dvnPermissionsStackedCells">
+                          <ice:outputText id="outputText7" value="Username (or Last Name): "/>
+                          <ice:inputText  id="textField1" value="#{OptionsPage.userName}" actionListener="#{OptionsPage.searchForPrivilegedUsers}"/>
+                          <ice:commandButton id="addUserButton" value="Find" actionListener="#{OptionsPage.searchForPrivilegedUsers}"/>
+                          <ice:outputText styleClass="errorMessage" value="User not found." rendered="#{OptionsPage.privilegedUserNotFound}"/>
+                          <br/>
+                          <ice:outputText styleClass="vdcHelpText" value="Enter username or last name to assign Network Admin or Dataverse Creator privileges."/>
+                          <ice:outputText styleClass="vdcHelpText" value="  (Note: Only the first 100 results will be returned.)"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="2">
+
+                          <ice:dataTable binding="#{OptionsPage.userTable}" cellpadding="0" cellspacing="0" width="98%"
+                                         columnClasses="vdcColPadded, vdcColPadded, vdcColPadded, vdcColPadded" headerClass="list-header-left"
+                                         rowClasses="list-row-even,list-row-odd" value="#{OptionsPage.privileges.privilegedUsers}" var="currentRow"
+                                         >
+                            <ice:column id="column1" >
+                              <f:facet name="header">
+                                <ice:outputText id="outputText3" value="Username"/>
+                              </f:facet>
+                              <ice:outputLink id="hyperlink2" value="/dvn/faces/login/AccountPage.xhtml?userId=#{currentRow.user.id}">
+                                <ice:outputText id="hyperlink2Text" value="#{currentRow.user.userName}"/>
+                              </ice:outputLink>
+                            </ice:column>
+                            <ice:column id="column9" rendered="#{currentRow.user.id!=OptionsPage.defaultNetworkAdminId}">
+                              <f:facet name="header">
+                                <ice:outputText id="outputText16" value="Privileged Role"/>
+                              </f:facet>
+                              <ice:selectOneRadio id="roleSelectMenu" value="#{currentRow.networkRoleId}">
+                                <f:selectItems id="roleSelectItems" value="#{OptionsPage.networkRoleSelectItems}"/>
+                                <ice:message for="roleSelectMenu" styleClass="errorMessage"/>
+                              </ice:selectOneRadio>
+                            </ice:column>
+                            <ice:column id="columnAdmin1" rendered="#{currentRow.user.id==OptionsPage.defaultNetworkAdminId}">
+                              <f:facet name="header">
+                                <ice:outputText id="outputTextadminhearder" value="Privileged Role"/>
+                              </f:facet>
+                                <ice:outputText value="Cannot Edit Default Network Administrator Permissions"/>
+                            </ice:column>
+                            <ice:column rendered="#{currentRow.user.id!=OptionsPage.defaultNetworkAdminId}">
+                              <ice:commandButton value="Clear Role" actionListener="#{OptionsPage.clearRole}"/>
+                            </ice:column>
+                          </ice:dataTable>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td class="dvnPermissionsTableOption dvnPermissionsStackedCells">
+                            <ice:outputText value="Authorize Users to access Terms-protected files via the API"/>
+                        </td>
+                        <td class="dvnPermissionsStackedCells">
+                          <div class="dvnInformationMessage">
+                              <p>
+                                <ice:graphicImage value="/resources/images/icon_warning.18.png" styleClass="dvn_icon"/>
+                                <ice:outputText styleClass="warnMessage" value=" We advise you to have a written agreement with authorized parties before allowing them to access any data sets protected by Terms of Use via Data Sharing API. The authorized party should be responsible for enforcing the Terms of Use to their end users. For more information, contact us at dvn_support@hmdc.harvard.edu."/>
+				<br/>
+				<ice:outputText value="(Please note that this only affects API access; users of the Dataverse Network web application will still be presented with the Terms of Use agreement form when accessing these materials through a browser.)"/>
+                              </p>
+                          </div>
+                          <ice:outputText id="outputText117" value="Username: "/>
+                          <ice:inputText onkeypress="if (window.event) return processEvent('', 'addUserbutton100'); else return processEvent(event, 'addUserbutton100');" id="textField101" value="#{OptionsPage.TOUUserName}"/>
+                          <ice:commandButton id="addUserButton100" value="Add" actionListener="#{OptionsPage.addTOUUser}"/>
+                          <ice:outputText styleClass="errorMessage" value="User not found." rendered="#{OptionsPage.TOUUserNotFound}"/>
+                          <br/>
+                          <ice:outputText styleClass="vdcHelpText" value="Enter username to authorize to bypass Terms of Use"/>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="2">
+                          <div jsfc="ice:panelGroup" rendered="#{!OptionsPage.displayTOUPrivilegedUsers}" styleClass="dvnPermissionsEmpty">
+                            <ice:outputText value="No users have been authorized to bypass Terms of Use on this dataverse network."/>
+                          </div>
+                          <ice:dataTable binding="#{OptionsPage.userTOUTable}" cellpadding="0" cellspacing="0" width="98%"
+                                         columnClasses="vdcColPadded, vdcColPadded, vdcColPadded, vdcColPadded" headerClass="list-header-left"
+                                         rowClasses="list-row-even,list-row-odd" value="#{OptionsPage.privileges.TOUPrivilegedUsers}" var="currentRow"
+                                         rendered="#{OptionsPage.displayTOUPrivilegedUsers}">
+                            <ice:column id="column100">
+                              <f:facet name="header">
+                                <ice:outputText id="outputText103" value="Username"/>
+                              </f:facet>
+                              <ice:outputLink id="hyperlink102" value="/dvn/faces/login/AccountPage.xhtml?userId=#{currentRow.id}">
+                                <ice:outputText id="hyperlink2Text" value="#{currentRow.userName}"/>
+                              </ice:outputLink>
+                            </ice:column>
+
+                            <ice:column>
+                              <ice:commandButton value="Revoke" actionListener="#{OptionsPage.clearTOURole}" rendered="#{currentRow.bypassTermsOfUse}"/>
+                            </ice:column>
+                          </ice:dataTable>
+                        </td>
+                      </tr>
+                    </table>
+                  <div id="groupPanel6" class="dvnFormPadding dvnFormMargin">
+                    <ice:commandButton id="button5" value="Save Changes" action="#{OptionsPage.saveNetworkPrivilegedUsersPage}"/>
+                  </div>
+
+          </div>
+
+</div>

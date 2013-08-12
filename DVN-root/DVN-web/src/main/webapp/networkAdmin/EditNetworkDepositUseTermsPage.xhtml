@@ -1,0 +1,41 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+                      xmlns:h="http://java.sun.com/jsf/html"
+                      xmlns:f="http://java.sun.com/jsf/core"
+                      xmlns:jsp="http://java.sun.com/JSP/Page"
+                      xmlns:ice="http://www.icesoft.com/icefaces/component"
+                      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+                      jsfc="ice:panelGroup">
+<script type="text/javascript">
+    // <![CDATA[
+    jQuery(document).ready(function(){
+        
+        initCheckTermsEnabled();
+        
+    });
+    // ]]>
+</script>
+<tr>
+    <td class="dvnOptionsTableOption">
+        <ice:outputText value="Deposit Term of Use"/>
+    </td>
+    <td>
+      <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+        <div class="dvnMsgBlockContainer">
+          <ice:outputText value="#{bundlePageInfo.editDvnDepositTermsHelp}" escape="false"/>
+        </div>
+      </div>
+      <div jsfc="ice:panelGroup" styleClass="dvnTermsEnable">
+        <ice:selectBooleanCheckbox value="#{OptionsPage.networkDepositTermsOfUseEnabled}"/>
+        <ice:outputText value=" Enable Terms of Use"/>
+      </div>
+      <ice:message for="textArea1" styleClass="errorMessage" id="outputText2MsgDeposit"/>
+      <br/>
+      <div jsfc="ice:panelGroup" styleClass="dvnTermsField" style="#{OptionsPage.networkDepositTermsOfUseEnabled} ? 'display:block;' : 'display:none;'">
+        <ice:inputTextarea rows="8" cols="70" id="textArea1Deposit"
+                           styleClass="formHtmlEnabled" immediate="true" value="#{OptionsPage.networkDepositTermsOfUse}">
+          <f:validator validatorId="XhtmlValidator"/>
+        </ice:inputTextarea>
+      </div>
+    </td>
+</tr>
+</div>

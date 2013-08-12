@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:ice="http://www.icesoft.com/icefaces/component">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+
+<body>
+
+    <ui:composition template="/template.xhtml">                
+        <ui:param name="pageTitle" value="#{bundlePageInfo.dvOptionsTitle} - #{VDCRequest.dataversePageTitle}"/>
+        <ui:define name="metadata">
+            <f:metadata>
+                <f:event type="preRenderView" listener="#{OptionsPage.preRenderView}"/> 
+                <f:event type="preRenderView" listener="#{EditBannerFooterPage.preRenderView}"/> 
+                <f:viewParam name="oauth_verifier" value="#{OptionsPage.twitterVerifier}"/>
+                <f:viewParam name="tab" value="#{OptionsPage.tab}"/>
+                <f:viewParam name="tab2" value="#{OptionsPage.tab2}"/>
+            </f:metadata> 
+        </ui:define>
+        <ui:define name="body">            
+            <ice:form id="form1">
+            <script type="text/javascript">
+                // <![CDATA[
+                    function initGuestBookResponses(){
+                        document.getElementById('form1:initGuestBookResponse').click();
+                    }
+                    function initTemplates(){
+                        document.getElementById('form1:initTemplates').click();
+                    }
+                    function initDVPrivilegedUsers(){
+                        document.getElementById('form1:initDVPrivilegedUsers').click();
+                    }
+                    function initDVTerms(){
+                        document.getElementById('form1:initDVTerms').click();
+                    }
+                    function initGuestbookQuestionnaire(){
+                        document.getElementById('form1:initGuestbookQuestionnaire').click();
+                    } 
+                    function initDVGeneralSettings(){
+                        document.getElementById('form1:initDVGeneralSettings').click();
+                    }
+                    function initCheckDVTermsEnabled() {
+                        jQuery('div.dvnTermsEnable input.iceSelBoolChkbx[type=checkbox]').each(function(){
+                            if ( jQuery(this).is(':checked') ) {
+                                jQuery(this).parent().siblings('div.dvnTermsField').show();
+                            } else {
+                                jQuery(this).parent().siblings('div.dvnTermsField').hide();
+                            }
+                        });
+                    }
+                // ]]>
+            </script>
+            <ice:commandButton visible="false" id="initGuestBookResponse" action="#{OptionsPage.initGuestBookResponses}"/>
+            <ice:commandButton visible="false" id="initTemplates" action="#{OptionsPage.initTemplates}"/>
+            <ice:commandButton visible="false" id="initDVPrivilegedUsers" action="#{OptionsPage.initDVPrivilegedUsers}"/>
+            <ice:commandButton visible="false" id="initDVTerms" action="#{OptionsPage.initDVTerms}"/>
+            <ice:commandButton visible="false" id="initGuestbookQuestionnaire" action="#{OptionsPage.initGuestbookQuestionnaire}"/>
+            <ice:commandButton visible="false" id="initDVGeneralSettings" action="#{OptionsPage.initDVGeneralSettings}"/>
+                <ice:inputHidden id="vdcId" value="#{VDCRequest.currentVDCId}"/>                    
+                <div class="dvn_section">
+                    <ice:panelTabSet id="tabSet1"
+                                     binding="#{OptionsPage.tabSet1}" 
+                                     styleClass="dvnTabs" selectedIndex="#{(VDCSession.loginBean.networkAdmin or VDCSession.loginBean.curatorOrAbove or (not VDCRequest.currentVDC.harvestingDv and (VDCSession.loginBean.contributor or VDCRequest.currentVDC.allowRegisteredUsersToContribute))) ? 0 : 1}">
+                        <!-- STUDY OPTIONS -->
+                        <ice:panelTab id="studies" label="Studies" url="/dvn#{VDCRequest.currentVDCURL}/faces/admin/OptionsPage.xhtml?tab=studies" rendered="#{VDCSession.loginBean.networkAdmin or VDCSession.loginBean.curatorOrAbove or (not VDCRequest.currentVDC.harvestingDv and (VDCSession.loginBean.contributor or VDCRequest.currentVDC.allowRegisteredUsersToContribute))}">
+                            <div jsfc="ice:panelGroup" id="layoutPanel2" panelLayout="flow">
+                                <ui:include src="/study/ManageStudiesFragment.xhtml"></ui:include>
+                            </div>
+                        </ice:panelTab>
+                        <!-- COLLECTIONS OPTIONS -->
+                        <ice:panelTab id="collections" label="Collections" url="/dvn#{VDCRequest.currentVDCURL}/faces/admin/OptionsPage.xhtml?tab=collections" 
+                                      rendered="#{VDCSession.loginBean.networkAdmin or VDCSession.loginBean.curatorOrAbove}">
+                            <div jsfc="ice:panelGroup" id="layoutPanel3" panelLayout="flow">
+                                <ui:include src="/collection/ManageCollectionsPage.xhtml"></ui:include>
+                            </div>
+                           <f:param name="tab" value="collections"/>
+                        </ice:panelTab>
+                        <!-- TEMPLATES OPTIONS -->
+                        <ice:panelTab id="templates" label="Templates" url="/dvn#{VDCRequest.currentVDCURL}/faces/admin/OptionsPage.xhtml?tab=templates" 
+                                      onclick="initTemplates();"
+                                      rendered="#{VDCSession.loginBean.networkAdmin or VDCSession.loginBean.curatorOrAbove}">
+                            <div jsfc="ice:panelGroup" id="layoutPanel4" panelLayout="flow">
+                                <ui:include src="ManageTemplatesPage.xhtml"></ui:include>
+                            </div>
+                        </ice:panelTab>
+                        <!-- PERMISSIONS OPTIONS -->
+                        <ice:panelTab id="permissions" label="Permissions" url="/dvn#{VDCRequest.currentVDCURL}/faces/admin/OptionsPage.xhtml?tab=permissions" 
+                                      onclick="initDVPrivilegedUsers();"
+                                      rendered="#{VDCSession.loginBean.networkAdmin or VDCSession.loginBean.admin }">
+                            <div jsfc="ice:panelGroup" id="layoutPanel5" panelLayout="flow">
+                                <ice:panelTabSet id="tabSetPermissions" styleClass="dvnTabs dvnSubTabs" binding="#{OptionsPage.dvPermissionsSubTab}">
+                                    <!-- PERMISSIONS -->
+                                    <ice:panelTab id="permissionsSub" label="Permissions">
+                                            <div jsfc="ice:panelGroup"  panelLayout="flow">
+                                                <ui:include src="PrivilegedUsersPage.xhtml"></ui:include>
+                                            </div>  
+                                    </ice:panelTab>
+                                    <!-- TERMS -->
+                                    <ice:panelTab id="termsSub" label="Terms"  onclick="initDVTerms();">
+                                        <table class="dvnOptionsTable" cellspacing="0" cellpadding="0" border="0">
+                                            <ui:include src="EditDepositUseTermsPage.xhtml"></ui:include>
+                                            <ui:include src="EditUseTermsPage.xhtml"></ui:include>
+                                        </table>
+                                        <div jsfc="ice:panelGroup">
+                                            <div class="dvnFormPadding dvnFormMargin">
+                                                <ice:commandButton  styleClass="dvnListenSave" value="Save Changes" action="#{OptionsPage.tousave_action}"/>
+                                                <!--<ice:commandButton  value="Cancel" action="#{OptionsPage.toucancel_action}"/>-->
+                                            </div>
+                                        </div>
+                                    </ice:panelTab>
+                                    <!-- GUESTBOOK -->
+                                    <ice:panelTab id="guestbookSub" label="Guestbook"  onclick="initGuestbookQuestionnaire();">
+                                        <div jsfc="ice:panelGroup">
+                                            <div jsfc="ice:panelGroup"  panelLayout="flow">
+                                                <ui:include src="EditGuestbookQuestionnairePage.xhtml"></ui:include>
+                                            </div> 
+                                        </div>
+                                    </ice:panelTab>
+                                    <ice:panelTab id="downloadDataSub" label="Download Tracking Data" onclick="initGuestBookResponses();" >
+                                        <div jsfc="ice:panelGroup">
+                                            <div jsfc="ice:panelGroup"  panelLayout="flow">
+                                                <ui:include src="GuestBookResponseDataPage.xhtml"></ui:include>
+                                            </div> 
+                                        </div>
+                                    </ice:panelTab>
+                                </ice:panelTabSet>
+                            </div>
+                        </ice:panelTab>
+                        <!-- DATAVERSE OPTIONS -->
+                        <ice:panelTab id="settings" label="Settings" 
+                                      onclick="initDVGeneralSettings();"
+                                      url="/dvn#{VDCRequest.currentVDCURL}/faces/admin/OptionsPage.xhtml?tab=settings" 
+                                      rendered="#{VDCSession.loginBean.networkAdmin or VDCSession.loginBean.admin}">
+                            <div jsfc="ice:panelGroup" id="layoutPanel1" panelLayout="flow">
+                                <!-- REMOVED CODE -->
+                                <div jsfc="ice:panelGroup">
+                                    <ice:panelTabSet id="tabSet3" styleClass="dvnTabs dvnSubTabs" binding="#{OptionsPage.dvSettingsSubTab}">
+                                        <!-- GENERAL -->
+                                        <ice:panelTab id="generalSub" label="General"    onclick="initDVGeneralSettings();">
+                                            <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+                                                <div class="dvnMsgBlockContainer">
+                                                  <ice:outputText value="#{bundlePageInfo.editDvSettingsHelp}" escape="false"/>
+                                                </div>
+                                            </div>
+                                            <div jsfc="ice:panelGroup">
+                                              <table class="dvnOptionsTable" cellspacing="0" cellpadding="0" border="0">
+                                                    <tr>
+                                                        <td class="dvnOptionsTableOption">
+                                                            <ice:outputText value="Dataverse Release Settings"/>
+                                                        </td>
+                                                        <td>
+                                                            <ice:selectOneMenu value="#{OptionsPage.siteRestriction}"  disabled="#{!(OptionsPage.enableSelectRelease)}">
+                                                                <f:selectItem itemLabel="Not Released" itemValue="Restricted"/>
+                                                                <f:selectItem itemLabel="Released" itemValue="Public"/>
+                                                            </ice:selectOneMenu>
+                                                            <ice:outputText styleClass="errorMessageBlock" value="#{bundlePageInfo.releasableDVErrorMessage}" rendered="#{(OptionsPage.notReleasableAndNotReleased)}"/>
+                                                            <ice:outputText styleClass="errorMessageBlock" value="#{bundlePageInfo.invalidReleasedDVErrorMessage}" rendered="#{(OptionsPage.releasedWithoutRequiredStudies)}"/>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                
+                                                <ui:include src="/site/EditSitePage.xhtml"></ui:include>
+                                                
+                                                <!--<ui:include src="EditHomePanelsPage.xhtml"></ui:include>-->
+                                                
+                                                <ui:include src="EditContactUsPage.xhtml"></ui:include>
+                                                
+                                                <ui:include src="EditStudyCommentsPage.xhtml"></ui:include>
+                                                                                               
+                                                <div id="groupPanel6" class="dvnFormPadding dvnFormMargin">
+                                                    <ice:commandButton id="btnSave" value="#{bundle.saveButtonLabel} Changes" action="#{OptionsPage.saveGeneralSettings_action}"/>
+                                                    <!--<ice:commandButton id="btnCancel" immediate="true" value="#{bundle.cancelButtonLabel}" action="#{EditContactUsPage.cancel_action}"/>-->
+                                                </div>
+                                            </div>
+                                        </ice:panelTab>
+                                        <!-- ADVANCED -->
+                                        <ice:panelTab id="advancedSub" label="Advanced">
+                                           <div jsfc="ice:panelGroup" panelLayout="flow">
+                                                <ui:include src="/admin/EditLockssConfigPage.xhtml"></ui:include>
+                                            </div>
+                                            <div class="dvnFormPadding dvnFormMargin">
+                                                <ice:commandButton id="button1DV" value="Save Changes" action="#{OptionsPage.locksSS_save}"/>
+                                            </div>
+                                        </ice:panelTab>
+                                        <!-- CUSTOMIZATION -->
+                                        <ice:panelTab id="customizationSub" label="Customization">
+                                            <div jsfc="ice:panelGroup">
+                                                <ui:include src="EditBannerFooterPage.xhtml"></ui:include>
+                                                <ui:include src="/admin/DefaultSortOrderPage.xhtml"></ui:include>
+                                                <ui:include src="/admin/SearchFieldsPage.xhtml"></ui:include>
+                                                <div class="dvnFormPadding dvnFormMargin">
+                                                <ice:commandButton id="saveButton" value="Save Changes" action="#{OptionsPage.saveCustomization}"/>
+                                                <!--<ice:commandButton id="cancelButton" value="Cancel" action="#{OptionsPage.cancelCustomization}"/>-->
+                                                </div>
+                                            </div>
+                                        </ice:panelTab>
+                                        <!-- PROMOTE -->
+                                        <ice:panelTab id="promoteSub" label="Promote Your Dataverse">
+                                            <div jsfc="ice:panelGroup">
+                                                <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+                                                     <div class="dvnMsgBlockContainer">
+                                                       <ice:outputText value="#{bundlePageInfo.codePromotionalHelp}" escape="false"/>
+                                                     </div>
+                                                </div>
+                                                <div jsfc="ice:panelGroup" styleClass="dvnPromotionalLinks" rendered="#{OptionsPage.twitterConfigured}">
+                                                <table class="dvnOptionsTable" cellspacing="0" cellpadding="0" border="0">
+                                                    <tr><td colspan="2" class="dvnPermissionsTableHeader"><ice:outputText value="Twitter"/></td></tr>
+                                                    <tr>
+                                                        <td class="dvnOptionsTableOption">
+                                                            <ice:outputText value="Sync Dataverse With Twitter"/>
+                                                        </td>
+                                                        <td>
+                                                            <ice:commandLink action="#{OptionsPage.authorizeTwitter}" rendered="#{!OptionsPage.twitterEnabled}">
+                                                                <ice:outputText  value="Enable Twitter"/>
+                                                            </ice:commandLink>
+                                                            <ice:commandLink action="#{OptionsPage.removeTwitter}" rendered="#{OptionsPage.twitterEnabled}">
+                                                                <ice:outputText  value="Disable Twitter"/>
+                                                            </ice:commandLink>
+                                                            <ice:outputText value=" syncing with your Dataverse to send automatic tweets."/>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                </div>
+                                                
+                                                <ui:include src="/admin/PromotionalLinkSearchBoxPage.xhtml"></ui:include>
+                                            </div>
+                                        </ice:panelTab>
+                                    </ice:panelTabSet>
+                                </div>
+                            </div>
+                        </ice:panelTab>
+                    </ice:panelTabSet>
+                </div>
+            </ice:form>                
+        </ui:define>
+    </ui:composition>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+      jsfc="ice:panelGroup">
+
+          <div jsfc="ice:panelGroup" styleClass="dvnManageTableTop">
+              <div jsfc="ice:panelGroup" styleClass="dvn_margin12 dvnInformationMessage">
+                <div class="dvnMsgBlockContainer">
+                  <ice:outputText value="#{bundlePageInfo.commentReviewHelp}" escape="false"/>
+                </div>
+              </div>
+            <ice:panelGrid cellpadding="0" cellspacing="0" border="0" columns="2" width="100%"
+                           columnClasses="dvn_StudyListTotals, dvnPaginatorWrap" rendered="#{!empty OptionsPage.commentsForReview}">
+              <div jsfc="ice:panelGroup" styleClass="dvnManageTableTotals">
+                <ice:dataPaginator id="scroll_2" for="commentReviewData"
+                                   rowsCountVar="rowsCount" displayedRowsCountVar="displayedRowsCountVar"
+                                   firstRowIndexVar="firstRowIndex" lastRowIndexVar="lastRowIndex"
+                                   pageCountVar="pageCount" pageIndexVar="pageIndex">
+                 <ice:outputText value="Comments for Review: " />
+                  <ice:outputText value="#{rowsCount}" styleClass="dvn_totalsValue" />
+                 <ice:outputText rendered="#{rowsCount > displayedRowsCountVar}" value=", displaying " />
+                  <ice:outputFormat rendered="#{rowsCount > displayedRowsCountVar}" value="{0} to {1}" styleClass="dvn_totalsValue">
+                    <f:param value="#{firstRowIndex}"/>
+                    <f:param value="#{lastRowIndex}"/>
+                  </ice:outputFormat>
+                </ice:dataPaginator>
+              </div>
+              <div jsfc="ice:panelGroup" styleClass="dvnPaginatorWrap">
+                <ice:dataPaginator id="scroll_1" styleClass="dvnPaginatorRight" for="commentReviewData" fastStep="3"
+                                   pageCountVar="pageCount" pageIndexVar="pageIndex"
+                                   paginator="true" paginatorMaxPages="4" renderFacetsIfSinglePage="false">
+                  <f:facet name="first">
+                    <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-first.gif"/>
+                  </f:facet>
+                  <f:facet name="last">
+                    <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-last.gif"/>
+                  </f:facet>
+                  <f:facet name="previous">
+                    <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-previous.gif"/>
+                  </f:facet>
+                  <f:facet name="next">
+                    <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-next.gif"/>
+                  </f:facet>
+                  <f:facet name="fastforward">
+                    <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-ff.gif"/>
+                  </f:facet>
+                  <f:facet name="fastrewind">
+                    <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-fr.gif"/>
+                  </f:facet>
+                </ice:dataPaginator>
+              </div>
+            </ice:panelGrid>
+          </div>
+          <div jsfc="ice:panelGroup">
+              <div jsfc="ice:panelGroup" styleClass="dvnManageTableEmpty" rendered="#{empty OptionsPage.commentsForReview}">
+                  <ice:outputText value="There are no study comments flagged for review."/>
+              </div>
+              <ice:dataTable cellpadding="0" cellspacing="0" width="100%"  rendered="#{!empty OptionsPage.commentsForReview}"
+                             styleClass="dvnManageTable dvnCommentReviewTable"
+                             headerClass="list-header-left vdcColPadded" id="commentReviewData"
+                             rows="10"
+                             rowClasses="list-row-even vdcColPadded, list-row-odd vdcColPadded"
+                             columnClasses="dvnCommentReviewCol1,dvnCommentReviewCol2,dvnCommentReviewCol3,dvnCommentReviewCol4,dvnCommentReviewCol5,dvnCommentReviewCol6"
+                             value="#{OptionsPage.commentsForReview}" var="currentRow">
+                <ice:column>
+                  <f:facet name="header">
+                    <ice:outputText value="Global ID"/>
+                  </f:facet>
+                    <ice:outputLink value="#{currentRow.studyTabLink}">
+                        <ice:outputText value="#{currentRow.studyComment.studyVersion.study.globalId}"/>
+                    </ice:outputLink>
+                </ice:column>
+                <ice:column>
+                  <f:facet name="header">
+                    <ice:outputText value="Comment"/>
+                  </f:facet>
+                   <ice:outputLink value="#{currentRow.commentsTabLink}">
+                      <ice:outputText value="#{currentRow.studyComment.comment}"/>
+                  </ice:outputLink>
+                </ice:column>
+                <ice:column>
+                  <f:facet name="header">
+                    <ice:outputText value="Posted By"/>
+                  </f:facet>
+                  <ice:outputLink value="#{currentRow.userAccountPageLink}">
+                    <ice:outputText value="#{currentRow.studyComment.commentCreator.userName}"/>
+                  </ice:outputLink>
+                </ice:column>
+                <ice:column>
+                  <f:facet name="header">
+                    <ice:outputText value="Posted Time"/>
+                  </f:facet>
+                  <ice:outputText value="#{currentRow.studyComment.createTime}"/>
+                </ice:column>
+                <ice:column>
+                  <f:facet name="header">
+                    <ice:outputText value="Reported By"/>
+                  </f:facet>
+                    <ice:outputText escape="false" value="#{currentRow.flaggedByAccountLinks}"/>
+                </ice:column>
+                <ice:column>
+                  <f:facet name="header">
+                    <ice:outputText value="Action"/>
+                  </f:facet>
+                <ice:commandLink binding="#{OptionsPage.deleteCommentLink}"
+                                 actionListener="#{OptionsPage.deleteFlaggedComment}">
+                    <f:attribute name="commentId" value="#{currentRow.studyComment.id}" />
+                    <ice:outputText value="Delete"/>
+                  </ice:commandLink>
+                <ice:commandLink binding="#{OptionsPage.ignoreCommentFlagLink}"
+                                 actionListener="#{OptionsPage.ignoreCommentFlag}">
+                    <f:attribute name="commentId" value="#{currentRow.studyComment.id}" />
+                    <ice:outputText value="Ignore"/>
+                 </ice:commandLink>
+                </ice:column>
+              </ice:dataTable>
+          </div>
+</div>

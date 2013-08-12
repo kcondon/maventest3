@@ -1,0 +1,40 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+      jsfc="ice:panelGroup">
+
+          <table class="dvnOptionsTable" cellspacing="0" cellpadding="0" border="0">
+            <tr>
+                <td class="dvnOptionsTableOption">
+                    <ice:outputText value="Release Dataverse Requirements"/>
+                </td>
+                <td>
+                  <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+                    <div class="dvnMsgBlockContainer">
+                      <ice:outputText value="#{bundlePageInfo.editNetworkDvRequirementsHelp}" escape="false"/>
+                    </div>
+                  </div>
+                  <div jsfc="ice:panelGroup">
+                    <ice:selectBooleanCheckbox value="#{OptionsPage.requireDvdescription}"/>
+                    <ice:outputText value=" Network Description"/>
+                  </div>
+                  <div jsfc="ice:panelGroup">
+                    <ice:selectBooleanCheckbox value="#{OptionsPage.requireDvaffiliation}"/>
+                    <ice:outputText value=" Affiliation"/>
+                  </div>
+                  <div jsfc="ice:panelGroup">
+                    <ice:selectBooleanCheckbox value="#{OptionsPage.requireDvclassification}"/>
+                    <ice:outputText value=" Classification"/>
+                  </div>
+                  <div jsfc="ice:panelGroup">
+                    <ice:selectBooleanCheckbox value="#{OptionsPage.requireDvstudiesforrelease}"/>
+                    <ice:outputText value=" Studies (to be included prior to release)"/>
+                  </div>
+                </td>
+            </tr>
+          </table>
+
+</div>

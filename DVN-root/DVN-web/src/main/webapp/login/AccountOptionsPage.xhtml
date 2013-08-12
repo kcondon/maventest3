@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ice="http://www.icesoft.com/icefaces/component">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+    <ui:composition template="/template.xhtml">
+        <ui:param name="pageTitle" value="Account Options"/>
+        <ui:define name="metadata">
+            <f:metadata>
+                <f:viewParam name="userId" value ="#{AccountPage.userId}"/>
+                <f:event type="preRenderView" listener="#{AccountPage.preRenderView}" />
+                <f:event type="preRenderView" listener="#{ManageStudiesList.preRenderView}" />
+            </f:metadata>
+        </ui:define>
+        <ui:define name="body">
+            <ice:form id="form1" >
+                <ice:panelTabSet id="tabSet1" styleClass="dvnTabs" selectedIndex="0" binding="#{AccountPage.tabSet1}">
+                    <!-- Account Tab  -->
+                    <ice:panelTab id="account" label="Account for #{AccountPage.user.userName}" url="/dvn#{VDCRequest.currentVDCURL}/faces/login/AccountPage.xhtml&amp;tab=account" >
+                        <ui:include src="/login/AccountFragment.xhtml">
+                            <ui:param name="returnPage" value="accountOptions"/>
+                        </ui:include>
+                    </ice:panelTab>
+                    <ice:panelTab id="studies" label="Studies" url="/dvn#{VDCRequest.currentVDCURL}/faces/login/AccountPage.xhtml&amp;tab=studies" rendered="#{VDCSession.loginBean.hasContributed}">
+                        <ui:include src="/study/ManageStudiesFragment.xhtml">
+                        </ui:include>
+                    </ice:panelTab>
+                    <!-- MY DATAVERSES -->
+                    <ice:panelTab id="myDataverses" label="Dataverses" rendered="#{(VDCRequest.vdcNetwork.allowCreateRequest or VDCSession.loginBean.hasDataverses or VDCSession.loginBean.networkCreator) and !VDCSession.loginBean.networkAdmin}">
+                        <ui:include src="/networkAdmin/MyDataversesFragment.xhtml">
+                        </ui:include>
+                    </ice:panelTab>
+                </ice:panelTabSet>
+            </ice:form>
+        </ui:define>
+    </ui:composition>
+</body>
+</html>

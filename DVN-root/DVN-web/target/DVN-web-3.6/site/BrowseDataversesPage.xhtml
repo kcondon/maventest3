@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ice="http://www.icesoft.com/icefaces/component">
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</h:head>
+
+<h:body>
+  <ui:composition template="/template.xhtml">
+    <ui:param name="pageTitle" value="#{VDCRequest.dataversePageTitle}"/>
+        <ui:define name="metadata">
+            <f:metadata>
+                <f:viewParam name="classificationList" value="#{ClassificationList}"/>
+                <f:viewParam name="groupId" value="#{BrowseDataversesPage.groupId}"/>
+                <f:viewParam name="initialSort" value="#{BrowseDataversesPage.initialSort}"/>
+                <f:viewParam name="initialFilter" value="#{BrowseDataversesPage.initialFilter}"/>
+                <f:event type="preRenderView" listener="#{BrowseDataversesPage.preRenderView}"/>
+            </f:metadata>
+        </ui:define>
+        <ui:define name="body">
+          <ice:form id="browsedataversespage">
+              <ice:commandButton type="submit" visible="false" id="updateDVList" value="update" action="#{BrowseDataversesPage.updateDVList}"/>
+        <div id="dvn_mainSection">
+            
+            <!-- Start Search Results (with side panel, if available) -->
+            <div jsfc="ice:panelGroup" styleClass="dvn_section dvn_overflow dvn_clear">
+                
+                    <div class="dvnStudyListCollectionNameBlock">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%" class="dvnHmpgGroupHeaderBlock">
+                            <tr>
+                                <td valign="bottom">
+                                    <div jsfc="ice:panelGroup" styleClass="dvnStudyListCollectionName">
+                                        <ice:outputText styleClass="dvnStudyListHeader" value="#{BrowseDataversesPage.groupName}"/>                                       
+                                    </div>
+                                </td>
+                                <td>
+                                    <div jsfc="ice:panelGroup" styleClass="dvnManageTableControls" rendered="#{VDCRequest.currentVDC == null}">
+                                        <div jsfc="ice:panelGroup" styleClass="dvnCreateActionBox dvnCreateDataverse" rendered="#{VDCRequest.vdcNetwork.allowCreateRequest and !VDCRequest.readOnlyDatabase}">
+                                            <ice:outputLink value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/AddSitePage.xhtml">
+                                                <ice:outputText value="Create Dataverse"/>
+                                            </ice:outputLink>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="dvnStudyListWrapper">
+                        <div jsfc="ice:panelGroup" styleClass="dvnStudyListResultsTop">
+                            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td align="left" valign="bottom">
+                                        <div class="dvnStudyListResultsSortFilterBlock">
+                                            <div jsfc="ice:panelGroup" styleClass="dvnStudyListResultsSort" id="groupPanel5" rendered="#{!empty(BrowseDataversesPage.vdcUIList.vdcUIList)}">
+                                                <ice:outputText value="Sort By: "/>
+                                                <ice:selectOneMenu id="dropdown2" valueChangeListener="#{BrowseDataversesPage.sort_action}" onchange="submit();"
+                                                                value="#{BrowseDataversesPage.sortOrderString}">
+                                                    <f:selectItems value="#{BrowseDataversesPage.sortOrderItems}"/>
+                                                </ice:selectOneMenu>
+                                            </div>
+                                            <div jsfc="ice:panelGroup" styleClass="dvnStudyListResultsFilter">
+                                                <ice:outputText value="Filter: "/>
+                                                <ice:inputText binding="#{BrowseDataversesPage.inputFilterTerm}"
+                                                                size="25" maxlength="255"
+                                                                onkeyup="delayedRequestDV(form,this,event);"/>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td align="right">
+                                        <ice:panelGrid cellpadding="0" cellspacing="0" border="0" columns="2" id="gridPanel2"
+                                                columnClasses="dvn_StudyListTotals, dvnPaginatorWrap">
+                                            <div jsfc="ice:panelGroup">
+                                                    <ice:outputText styleClass="dvn_totalsLabel" value="Dataverses: "/>
+                                                    <ice:outputText styleClass="dvn_totalsValue" value="#{BrowseDataversesPage.vdcUIListSize}"/>
+                                            </div>
+                                            <div jsfc="ice:panelGroup">
+                                                <ice:dataPaginator for="dataverseListManage"
+                                                                    binding="#{BrowseDataversesPage.paginator}"
+                                                                    id="dataScroller"
+                                                                    paginator="true" fastStep="3"
+                                                                    paginatorMaxPages="4"
+                                                                    renderFacetsIfSinglePage="false"
+                                                                    styleClass="dvnPaginatorFloatRight">
+                                                    <f:facet name="first">
+                                                        <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-first.gif" title="First Page"/>
+                                                    </f:facet>
+                                                    <f:facet name="fastrewind">
+                                                        <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-fr.gif" title="Fast Backward"/>
+                                                    </f:facet>
+                                                    <f:facet name="previous">
+                                                        <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-previous.gif" title="Previous"/>
+                                                    </f:facet>
+                                                    <f:facet name="next">
+                                                        <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-next.gif" title="Previous"/>
+                                                    </f:facet>
+                                                    <f:facet name="fastforward">
+                                                        <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-ff.gif" title="Fast Forward"/>
+                                                    </f:facet>
+                                                    <f:facet name="last">
+                                                        <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-last.gif" title="Previous"/>
+                                                    </f:facet>
+                                                </ice:dataPaginator>
+                                            </div>
+                                        </ice:panelGrid>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="dvnListingPageWrap">
+                            <div jsfc="ice:panelGroup" styleClass="dvnListingPagePanel" rendered="#{!empty BrowseDataversesPage.groupItemBeans}">
+                                
+                                <script type="text/javascript">
+                                    // <![CDATA[
+                                    // javascript for the accordion
+                                    jQuery(document).ready(function(){
+                                        // initListingPanelHeights();
+                                        classificationsMenu();
+                                        
+                                        var groupId = #{BrowseDataversesPage.groupId};
+                                        jQuery('a.groupId' + groupId).addClass('selected');
+                                    });
+                                    function classificationsMenu() {
+                                        jQuery('.dvnBrowseDvClassifications a.head, .dvnBrowseDvClassifications a.lastNode').bind('click', function(){
+                                            jQuery(this).parents('ul.xtraMenu').find('a.selected').removeClass('selected');
+                                            jQuery(this).toggleClass('selected');
+                                        })
+                                    }
+                                    // ]]>
+                                </script>
+                                
+                                <div jsfc="ice:panelGroup" styleClass="dvn_theMenuContainer dvnBrowseDvClassifications">
+                                    <div class="theMenuContainer">
+                                        <!-- START ACCORDION -->
+                                        <ul id="navigation" class="basic">
+                                            <li>
+                                                <ul class="xtraMenu basic">
+                                                    <!-- All Dataverses -->
+                                                    <li>
+                                                        <h4 class="dvnHmpgAllDataverses">
+                                                            <ice:outputLink styleClass="head groupId-1" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/BrowseDataversesPage.xhtml">    
+                                                                <ice:outputText value="Show All Released Dataverses"/>
+                                                            </ice:outputLink>
+                                                        </h4>
+                                                    </li>
+                                                    <li id="dvClassificationMenu" class="xtraMenu basic">
+                                                        
+                                                        <ui:repeat value="#{BrowseDataversesPage.groupItemBeans}" var="menuItems">
+                                                            <ui:fragment rendered="#{!empty(menuItems.childItems)}">
+                                                                <h3 class="head">
+                                                                    <ice:outputText value="#{menuItems.name}"/>
+                                                                </h3>
+                                                                <ul class="head-top">
+                                                                <ui:repeat rendered="#{menuItems != null}"
+                                                                        value="#{menuItems.childItems}"
+                                                                        var="item">
+                                                                    <!-- HAS SUBNODE DESCENDANTS -->
+                                                                    <ui:fragment rendered="#{!empty(item.xtraItems)}">
+                                                                        <li id="xtraMenu#{item.id}">
+                                                                            <h4 class="head">
+                                                                            <ice:outputLink styleClass="head groupId#{item.id}" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/BrowseDataversesPage.xhtml?groupId=#{item.id}"                                                                                                                                                                                                                    >
+                                                                                <ice:outputText value="#{item.name}"/>
+                                                                            </ice:outputLink>
+                               
+                                                                             <ice:outputText value=" (#{item.numberOfDataverses})" styleClass="dvnHmpgClassificationCount"/>
+                                                                            </h4>
+                                                                            <ui:fragment rendered="#{item.xtraItems != null and !empty(item.xtraItems)}">
+                                                                                <ul>
+                                                                                    <ui:repeat rendered="#{item.xtraItems != null}"
+                                                                                            value="#{item.xtraItems}"
+                                                                                            var="xtraItems">
+                                                                                        <li>
+                                                                                              <ice:outputLink styleClass="lastNode groupId#{xtraItems.id}" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/BrowseDataversesPage.xhtml?groupId=#{xtraItems.id}">
+                                                                                                <ice:outputText value="#{xtraItems.name}"/>
+                                                                                             </ice:outputLink>
+                                                                                            <ice:outputText value=" (#{xtraItems.numberOfDataverses})" styleClass="dvnHmpgClassificationCount"/>
+                                                                                        </li>
+                                                                                    </ui:repeat>
+                                                                                </ul>
+                                                                            </ui:fragment>
+                                                                        </li>
+                                                                    </ui:fragment>
+                                                                    <!-- END HAS SUBNODE DESCENDANTS -->
+                                                                    <!-- HAS NO SUBNODE DESCENDANTS -->
+                                                                    <ui:fragment rendered="#{empty(item.xtraItems)}">
+                                                                        <li>
+                                                                            <ice:outputLink styleClass="lastNode groupId#{item.id}" value="/dvn#{VDCRequest.currentVdcNetworkURL}/faces/site/BrowseDataversesPage.xhtml?groupId=#{item.id}">
+                                                                                <ice:outputText value="#{item.name}"/>
+                                                                            </ice:outputLink>
+                                                                            <ice:outputText value=" (#{item.numberOfDataverses})" styleClass="dvnHmpgClassificationCount"/>
+                                                                        </li>
+                                                                    </ui:fragment>
+                                                                    <!-- END HAS NO SUBNODE DESCENDANTS -->
+                                                                </ui:repeat>
+                                                                </ul>
+                                                            </ui:fragment>
+                                                        </ui:repeat>
+
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- END THE MENU -->
+                                
+                            </div>
+                            <div jsfc="ice:panelGroup" styleClass="#{(!empty BrowseDataversesPage.groupItemBeans) ? 'dvnListingPageContent' : ''}">
+                                <ice:dataTable id="dataverseListManage" width="100%"
+                                                rendered="#{!empty(BrowseDataversesPage.vdcUIList.vdcUIList)}"
+                                                rows="10"
+                                                styleClass="dvnStudyListTable dvnBrowseDataversesTable"
+                                                rowClasses="list-row-odd, list-row-even" columnClasses="dvnStudyListTableColInfo, dvnStudyListTableColID"
+                                                sortColumn="#{BrowseDataversesPage.vdcUIList.sortColumnName}"
+                                                sortAscending="#{BrowseDataversesPage.vdcUIList.ascending}"
+                                                value="#{BrowseDataversesPage.vdcUIList.vdcUIList}"
+                                                var="item">
+                                    <!-- name number -->
+                                    <ice:column>
+                                        <div class="dvnStudyListStudyInfo">
+                                            <ice:outputLink id="dataverse_link" value="/dvn/dv/#{item.vdc.alias}">
+                                                <ice:outputText value="#{item.name}"
+                                                    styleClass="#{(item.vdc.restricted) ? 'dvnAddClassificationDvNotReleased' : 'dvnAddClassificationDvReleased'}" />
+                                            </ice:outputLink>
+                                            <ice:outputText value="Affiliation: #{item.vdc.affiliation}" rendered="#{!empty(item.vdc.affiliation)}"/>
+                                            <ice:outputText value="Description: #{item.vdc.dvnDescription}" rendered="#{!empty(item.vdc.dvnDescription)}"/>
+                                        </div>
+                                    </ice:column>
+                                    <!-- Released -->
+                                    <ice:column>
+                                        <div class="dvnStudyListIDDownloads">
+                                            <div class="dvnStudyListDownloadCount">
+                                                <ice:outputText value="#{item.downloadCountInteger} downloads and analyses"/>
+                                            </div>
+                                            <ice:outputText value="Released: #{item.releaseDate}"/>
+                                        </div>
+                                    </ice:column>
+                                </ice:dataTable>
+                            </div>
+                        </div>
+                        
+                    </div>
+                
+            </div>
+        </div>
+        <!-- Main Section ends here -->
+        <script type="text/javascript">
+        // <![CDATA[
+            var timeout= 800; //milliseconds to wait for no activity
+            var countEvents= 0;
+            function delayedRequestDV(form,field,event){
+                countEvents++;
+                setTimeout(function() {
+                countEvents--;
+                    if(countEvents==0){               
+                        document.getElementById('browsedataversespage:updateDVList').click();
+                    }
+                },timeout);
+            }
+            function setHiddenValuesGroupId(groupId) {
+                document.getElementById('browsedataversespage:groupId').value = arguments[0];
+            }
+            
+            (function ($) {
+                $.fn.inlineStyle = function (prop) {
+                    var styles = this.attr("style"),
+                        value;
+                    styles && styles.split(";").forEach(function (e) {
+                        var style = e.split(":");
+                        if ($.trim(style[0]) === prop) {
+                            value = style[1];           
+                        }                    
+                    });   
+                    return value;
+                };
+            }(jQuery));
+            
+            function initListingPanelRemoveHeights() {
+                var listingPanel = jQuery('#dvn_mainSection div.dvnListingPagePanel');
+                var listingContent = jQuery('#dvn_mainSection div.dvnListingPageContent');
+                
+                var heightPanel = listingPanel.inlineStyle("height");
+                var heightContent = listingContent.inlineStyle("height");
+                
+                if (heightPanel || heightContent) {
+                    listingPanel.css('height', '');
+                    listingContent.css('height', '');
+                }
+            }
+            
+            function initListingPanelHeights() {
+                
+                var listingPanel = jQuery('#dvn_mainSection div.dvnListingPagePanel');
+                var listingContent = jQuery('#dvn_mainSection div.dvnListingPageContent');
+                
+                var listingPanelHeight = listingPanel.height();
+                var listingContentHeight = listingContent.height();
+                
+                if (listingPanelHeight > listingContentHeight) {
+                    listingContent.css('height', listingPanelHeight + 'px');
+                }
+                else {
+                    listingPanel.css('height', listingContentHeight + 'px');
+                }
+            }
+        // ]]>
+        </script>
+      </ice:form>
+    </ui:define>
+  </ui:composition>  
+</h:body>
+</html>

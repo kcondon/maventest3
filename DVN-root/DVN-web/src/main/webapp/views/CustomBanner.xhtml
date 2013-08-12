@@ -1,0 +1,10 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core" 
+     xmlns:jsp="http://java.sun.com/JSP/Page"
+     xmlns:ice="http://www.icesoft.com/icefaces/component">
+    <ui:composition>
+        <ice:outputText nospan="true" escape="false" rendered="#{VDCRequest.currentVDCId != null and VDCRequest.displayDVNCustomization}" value="#{VDCRequest.currentVDC.header}"/>
+        <ice:outputText nospan="true" escape="false" rendered="#{VDCRequest.currentVDCId == null and VDCRequest.displayDVNCustomization}" value="#{VDCRequest.currentVdcNetwork.networkPageHeader}"/>
+    </ui:composition>
+</div>

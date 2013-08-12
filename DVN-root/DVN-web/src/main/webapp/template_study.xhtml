@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"  
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      xmlns:dvn="/WEB-INF/tlds/dvn-components">
+<h:head>
+  <ice:outputText nospan="true" escape="false" rendered="#{VDCRequest.currentVDCId == null or (VDCRequest.currentVDCId != null and !VDCRequest.displayInFrame)}">
+    <script type="text/javascript">
+        // <![CDATA[
+        // check to see if page is loaded in an iframe; if so, and "pop" out to top level
+        if(self != top){
+            top.location.replace(self.location.href);
+        }
+        // ]]>
+    </script>
+  </ice:outputText>
+  <ice:outputText nospan="true" escape="false" rendered="#{VDCRequest.currentVDCId != null and VDCRequest.displayInFrame}">
+      <script type="text/javascript">
+          // <![CDATA[
+          // check to see if page should be in an iframe (and is not); if so, redirect to containing site (specifiying sub page, if neeeded)
+            if(self == top){
+                dvn_subpage = self.location.href;
+                if ( dvn_subpage.indexOf("/faces/") != -1) {
+                    window.location.replace("#{VDCRequest.currentVDC.parentSite}?dvn_subpage=" + dvn_subpage.substring( dvn_subpage.indexOf("/faces/") ) );
+                } else {
+                    window.location.replace("#{VDCRequest.currentVDC.parentSite}");
+                }
+            }
+          // ]]>
+      </script>
+  </ice:outputText>
+  <!-- page title param passed in by param -->
+  <title><ice:outputText nospan="true" value="#{pageTitle}"/></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta http-equiv="Content-Language" content="en"/>
+  <meta http-equiv="imagetoolbar" content="no"/>
+  <link rel="icon" type="image/png" href="/dvn/resources/images/favicondataverse.png"/>
+  <link rel="stylesheet" type="text/css" href="/dvn/resources/icefaces/dvn_rime/dvn_rime.css?v=#{VersionPage.versionNumber}"/>
+  <link rel="stylesheet" type="text/css" href="/dvn/resources/css/dvngeneral.css?v=#{VersionPage.versionNumber}"/>
+  <link rel="stylesheet" type="text/css" href="/dvn/resources/css/dvnspecific.css?v=#{VersionPage.versionNumber}"/>
+  <link rel="stylesheet" type="text/css" href="/dvn/resources/css/dvnhome.css?v=#{VersionPage.versionNumber}"/>
+  <link rel="stylesheet" type="text/css" href="/dvn/resources/css/dvnstudy.css?v=#{VersionPage.versionNumber}"/>
+  <!-- IE SPECIFIC STYLESHEET -->
+  <ice:outputText escape="false" nospan="true"
+                  value="&#60;!--[if lte IE 8]&#62;
+                  &#60;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;/dvn/resources/css/iefix.css?v=#{VersionPage.versionNumber}&#34;/&#62;
+                  &#60;![endif]--&#62;"/>
+  <ice:outputText escape="false" nospan="true"
+                  value="&#60;!--[if IE 8]&#62;
+                  &#60;link rel=&#34;stylesheet&#34; type=&#34;text/css&#34; href=&#34;/dvn/resources/css/ie8fix.css?v=#{VersionPage.versionNumber}&#34;/&#62;
+                  &#60;![endif]--&#62;"/>
+  <!-- FRAMES SPECIFIC STYLESHEET -->
+  <script type="text/javascript">
+    // <![CDATA[
+    if (window != top)
+    {
+      document.write ('<link rel="stylesheet" type="text/css" href="/dvn/resources/css/dvnframes.css?v=#{VersionPage.versionNumber}"/>');
+    }
+    // ]]>
+  </script>
+  <script type="text/javascript" src="/dvn/resources/javascript/EventCapture.js?v=#{VersionPage.versionNumber}"/>
+  <script type="text/javascript" src="/dvn/resources/javascript/jquery.js?v=#{VersionPage.versionNumber}"/>
+  <script type="text/javascript" src="/dvn/resources/javascript/jquery.truncator.js?v=#{VersionPage.versionNumber}"/>
+  <script type="text/javascript" src="/dvn/resources/javascript/jquery.dimensions.js?v=#{VersionPage.versionNumber}"/>
+  <script type="text/javascript" src="/dvn/resources/javascript/jquery.tooltip.min.js?v=#{VersionPage.versionNumber}"/>
+  <script type="text/javascript" src="/dvn/resources/javascript/jquery.cookie.js?v=#{VersionPage.versionNumber}"/>
+  <script type="text/javascript" src="/dvn/resources/javascript/jcap.js?v=#{VersionPage.versionNumber}"/>
+  <script type="text/javascript" src="/dvn/resources/javascript/md5.js?v=#{VersionPage.versionNumber}"/>
+  <script type="text/javascript">
+      // <![CDATA[
+      jQuery.noConflict();
+      jQuery(document).ready(function(){
+              initInlineHelpTip();
+              jQuery(".dvnstudystatusversionnote, .dvnCollectionDescription").truncate({max_length: 250});
+        });
+        function initInlineHelpTip(){
+            jQuery('.dvnInlineHelpTip').tooltip({
+                showURL: false,
+                showBody: " - "
+            });
+            
+            // Now remove the class, so when this method gets called again we don't include them
+            // (since calling .tooltip more than once seems to break the tooltips)
+            jQuery('.dvnInlineHelpTip').removeClass("dvnInlineHelpTip");            
+        };
+      // ]]>
+  </script>
+  <ice:outputText escape="false" nospan="true"
+                  rendered="#{applicationScope.googleAnalyticsKey != null || MainLayoutBean.googleAnalyticsKey != null}"
+                  value="#{(applicationScope.googleAnalyticsSourceCode != null) ? applicationScope.googleAnalyticsSourceCode : MainLayoutBean.googleAnalyticsSourceCode}"/>
+</h:head>
+<!--  this template is example 4.3 in the Facelets Shortcut -->
+<h:body>
+    <f:loadBundle basename="Bundle" var="bundle"/>
+    <f:loadBundle basename="BundlePageInfo" var="bundlePageInfo"/>
+    <ui:insert name="metadata"><!-- Default Metadata --></ui:insert>
+    <ui:insert name="title">
+        <!--  ****** THIS IS THE HEADER ******** -->
+        <ui:include src="views/CustomBanner.xhtml"/>
+        <!-- <ui:include src="views/ConnectedBanner.xhtml"/> -->
+    </ui:insert>
+    <div class="dvn_wrapper" id="dvn_wrapper">
+        <div class="dvn_content" id="content-frame">
+            <!-- required to fix a bug in firefox where the connection status box can be displayed erroneously -->
+            <ice:outputConnectionStatus showPopupOnDisconnect="false"/>
+            <div jsfc="ice:panelGroup" styleClass="dvnWarningMessage dvnReadOnlyBlock" rendered="#{!empty VDCRequest.vdcNetwork.statusNotice }">
+                 <div class="dvnMsgBlockContainer">
+                   <p>
+                       <ice:outputText id="statusNotice" value="#{VDCRequest.vdcNetwork.statusNotice}" escape="false" />
+                   </p>
+                </div>
+            </div>
+            <ui:insert name="title">
+                <!-- *** MENUBAR (Included from template) *** -->
+                <ui:include src="views/Menubar.xhtml"/>
+            </ui:insert>
+            <div jsfc="ice:panelGroup" styleClass="#{!empty(VDCRender.flash.warningMessage) ? 'dvnWarningMessage' : 'dvnSuccessMessage'}" rendered="#{!empty VDCRender.flash.successMessage or !empty VDCRender.flash.warningMessage}">
+              <div class="dvnMsgBlockContainer">
+                <p>
+                    <ice:outputText id="successMessage" value="#{VDCRender.flash.successMessage}" escape="false" rendered="#{!empty VDCRender.flash.successMessage}"/>
+                    <ice:outputText id="warningMessage" value="#{VDCRender.flash.warningMessage}" escape="false" rendered="#{!empty VDCRender.flash.warningMessage}"/>
+                </p>
+              </div>
+            </div>
+            <ui:insert name="body">Default Body</ui:insert>
+            <div class="dvn_clear"></div>
+        </div>
+    </div>
+    <ui:insert name="footer">
+        <ui:include src="views/CustomFooter.xhtml"/>
+    </ui:insert>
+    <ice:outputText escape="false" nospan="true"
+                    rendered="#{applicationScope.googleAnalyticsKey != null || MainLayoutBean.googleAnalyticsKey != null}"
+                    value="#{(applicationScope.googleAnalyticsCode != null) ? applicationScope.googleAnalyticsCode : MainLayoutBean.googleAnalyticsCode}"/>
+    <!-- fix for the comments modal dialog being affected by customization -->
+    <ice:form id="StudyCommentsPopup" rendered="#{MainLayoutBean.inStudyPage}">
+        <!-- The popup panel code -->
+        <!-- multiple zip popup -->
+        <ice:panelPopup id="multipleZipPopup"
+                        draggable="false"
+                        visible="#{studyPage.showMultipleZipPopup}"
+                        autoCentre="true"
+                        modal="true">
+            <f:facet name="header">
+                <ice:panelGrid id="autoCentZipPanelGrid"
+                               width="100%" cellpadding="0"
+                               cellspacing="0" columns="2"
+                               columnClasses="none,popupButton">
+                    <ice:outputText value="Download Selected Files"/>
+                    <ice:commandLink id="autoCentZipPopupClose"
+                                     actionListener="#{studyPage.toggleMultipleZipPopup}"
+                                     styleClass="popupModalClose">
+                        <ice:graphicImage value="/resources/images/icon_close.gif"/>
+                    </ice:commandLink>
+                </ice:panelGrid>
+            </f:facet>
+            <f:facet name="body">
+                <ice:panelGrid id="autoCentZipContent"
+                               width="100%" cellpadding="0"
+                               cellspacing="0" columns="1"
+                               styleClass="popupModalBody">
+                    <div jsfc="ice:panelGroup" styleClass="dvnPopupInfoMessage">
+                        <p>
+                            <ice:graphicImage styleClass="dvn_icon" value="/dvn/resources/images/icon_info.gif"/>
+                            <ice:outputText value=" You are about to download ZIP Archives of the files you selected. Because of their size, they were split in multiple files. Click each ZIP Archives link to download your selected files."/>
+                        </p>
+                    </div>
+                    <div id="dvnMultipleZipPopupScrollBox"></div>
+                    <div jsfc="ice:panelGroup" styleClass="dvnFormPadding dvnFormMargin">
+                        <ice:commandButton id="autoCentZipPopupDone"
+                                           actionListener="#{studyPage.toggleMultipleZipPopup}"
+                                           value="Done"/>
+                    </div>
+                </ice:panelGrid>
+            </f:facet>
+        </ice:panelPopup>
+        <!-- end multiple zip -->
+        <!-- report abuse popup -->
+        <ice:panelPopup id="reportPopup"
+                        draggable="false"
+                        visible="#{StudyCommentsFragment.showPopup}"
+                        autoCentre="true"
+                        modal="true">
+            <f:facet name="header">
+                <ice:panelGrid id="autoCentReportPanelGrid"
+                               width="100%"
+                               cellpadding="0"
+                               cellspacing="0"
+                               columns="2"
+                               columnClasses="none, popupButton">
+                    <ice:outputText value="Report Abuse"/>
+                    <ice:commandLink id="autoCentReportPopupClose"
+                                     actionListener="#{StudyCommentsFragment.togglePopup}"
+                                     styleClass="popupModalClose">
+                        <ice:graphicImage value="/resources/images/icon_close.gif"/>
+                    </ice:commandLink>
+                </ice:panelGrid>
+            </f:facet>
+            <f:facet name="body">
+                <ice:panelGrid id="autoCentReportContent"
+                               width="100%"
+                               cellpadding="0"
+                               cellspacing="0"
+                               columns="1"
+                               styleClass="popupModalBody">
+                    <ice:outputText value="You are about to report this comment as abusive because of inappropriate language, tone, or other violation of the study terms of use."/>
+                    <ice:outputText value="Do you want to continue?"/>
+                    <div jsfc="ice:panelGroup" styleClass="dvnFormPadding dvnFormMargin">
+                        <ice:commandButton id="autoCentReportPopupOk"
+                                           actionListener="#{StudyCommentsFragment.reportAbuse}"
+                                           value="OK"/>
+                        <ice:commandButton id="autoCentReportPopupCancel"
+                                           actionListener="#{StudyCommentsFragment.togglePopup}"
+                                           value="Cancel"/>
+                    </div>
+                </ice:panelGrid>
+            </f:facet>
+        </ice:panelPopup>
+        <!-- delete popup -->
+        <ice:panelPopup id="deletePopup"
+                        draggable="false"
+                        visible="#{StudyCommentsFragment.showDeletePopup}"
+                        autoCentre="true"
+                        modal="true">
+            <f:facet name="header">
+                <ice:panelGrid id="autoCentPanelGrid"
+                               width="100%" cellpadding="0"
+                               cellspacing="0" columns="2"
+                               columnClasses="none,popupButton">
+                    <ice:outputText value="Delete Comment"/>
+                    <ice:commandLink id="autoCentPopupClose"
+                                     actionListener="#{StudyCommentsFragment.toggleDeletePopup}"
+                                     styleClass="popupModalClose">
+                        <ice:graphicImage value="/resources/images/icon_close.gif"/>
+                    </ice:commandLink>
+                </ice:panelGrid>
+            </f:facet>
+            <f:facet name="body">
+                <ice:panelGrid id="autoCentContent"
+                               width="100%" cellpadding="0"
+                               cellspacing="0" columns="1"
+                               styleClass="popupModalBody">
+                    <ice:outputText value="You are about to delete a comment. This comment will no longer be visible to any users."/>
+                    <ice:outputText value="Do you want to continue?"/>
+                    <div jsfc="ice:panelGroup" styleClass="dvnFormPadding dvnFormMargin">
+                        <ice:commandButton id="autoCentPopupOk"
+                                           actionListener="#{StudyCommentsFragment.deleteFlaggedComment}"
+                                           value="OK"/>
+                        <ice:commandButton id="autoCentPopupCancel"
+                                           actionListener="#{StudyCommentsFragment.toggleDeletePopup}"
+                                           value="Cancel"/>
+                    </div>
+                </ice:panelGrid>
+            </f:facet>
+        </ice:panelPopup>
+        <!-- end delete -->
+        <!-- end the popup panel code -->
+    </ice:form>
+    <!-- popups for Study Version Notes and Delete/Destroy confirmation: -->
+    <!-- they are needed by several different pages, so it made sense to -->
+    <!-- define them in these fragments that can be loaded where necessary. -->
+    <ui:include src="study/VersionNotesPopupFragment.xhtml"/>
+    <ui:include src="study/DeletePopupFragment.xhtml"/>
+</h:body>
+    <script type="text/javascript">
+        // <![CDATA[
+        // TODO: remove this when we upgrade to Icefaces 3; this is a workaround to solve an issue where a request is being submitted when the page is unloaded
+        window.onbeforeunload = null;
+        // ]]>
+    </script>
+</html>

@@ -1,0 +1,40 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+      jsfc="ice:panelGroup">
+
+          <table class="dvnOptionsTable" cellspacing="0" cellpadding="0" border="0" >
+            <tr >
+                <td class="dvnOptionsTableOption" >
+                    <ice:outputText value="Network Name" rendered="#{!isSubnetwork}"/>
+                    <ice:outputText value="Subnetwork Name" rendered="#{isSubnetwork}"/>
+                    <ice:graphicImage value="#{bundle.iconRequired}"/>
+                </td>
+                <td >
+                    <div jsfc="ice:panelGroup" styleClass="dvnInformationMessage">
+                        <div class="dvnMsgBlockContainer">
+                          <ice:outputText value="#{bundlePageInfo.editDvnNameHelp}" rendered="#{!isSubnetwork}" escape="false"/>
+                          <ice:outputText value="#{bundlePageInfo.editDvnSubNetworkNameHelp}" rendered="#{isSubnetwork}" escape="false"/>
+                        </div>
+                    </div>
+                    <div jsfc="ice:panelGroup" styleClass="#{OptionsPage.msg.styleClass}" rendered="#{!empty OptionsPage.msg.messageText and !isSubnetwork}">
+                        <ice:outputText id="statusMessage" value="#{OptionsPage.msg.messageText}"/>
+                    </div>
+                    <div jsfc="ice:panelGroup">
+                        <ice:inputText 
+                                       binding="#{EditNetworkNamePage.textFieldNetworkName}" 
+                                       id="textField1" size="20" value="#{EditNetworkNamePage.networkName}" 
+                                       validator="#{EditNetworkNamePage.validateName}"
+                                       required="true"
+                                       requiredMessage="This is required"
+                                       onkeypress="if (window.event) return processEvent('', 'form1:button1'); else return processEvent(event, 'form1:button1');"/>
+                       <ice:message for="textField1" showSummary="true" showDetail="false" styleClass="errorMessage"/>
+                    </div>
+                </td>
+            </tr>
+          </table>
+
+</div>

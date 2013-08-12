@@ -1,0 +1,243 @@
+<div xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsp="http://java.sun.com/JSP/Page"
+      xmlns:ice="http://www.icesoft.com/icefaces/component"
+      xmlns:dvn="/WEB-INF/tlds/dvn-components"
+      jsfc="ice:panelGroup">
+         <script type="text/javascript">
+          // <![CDATA[
+            function setHiddenValues(alphaKey) {
+                document.getElementById('form1:alphaCharacter').value = arguments[0];
+              }
+           // ]]>
+         </script>
+          <div jsfc="ice:panelGroup" styleClass="dvnManageTableTop">
+              <div jsfc="ice:panelGroup" styleClass="dvn_margin12 dvnInformationMessage">
+                <div class="dvnMsgBlockContainer">
+                    <ice:outputText value="#{bundlePageInfo.manageDvsHelp}" escape="false"/>
+                </div>
+              </div>
+              <div jsfc="ice:panelGroup" styleClass="dvnManageTableControls" rendered="#{VDCRequest.currentVDC == null}">
+                    <ul class="dvnAlphaBrowseBlock">
+                        <ui:fragment rendered="#{(OptionsPage.vdcUIList.alphaCharacter == '' or OptionsPage.vdcUIList.alphaCharacter == null)}">
+                            <li class="dvnAlphaBrowseSelected" onmouseover="this.className='dvnAlphaBrowseHover'" onmouseout="this.className='dvnAlphaBrowseSelected'">
+                                <ice:commandLink  onclick="setHiddenValues('All');">
+                                        <ice:outputText value="ALL"/>
+                                </ice:commandLink>
+                            </li>
+                        </ui:fragment>
+                        <ui:fragment rendered="#{(OptionsPage.vdcUIList.alphaCharacter != '' and OptionsPage.vdcUIList.alphaCharacter != null)}">
+                            <li class="dvnAlphaBrowse" onmouseover="this.className='dvnAlphaBrowseHover'" onmouseout="this.className='dvnAlphaBrowse'">
+                                <ice:commandLink  onclick="setHiddenValues('All');">
+                                        <ice:outputText value="ALL"/>
+                                </ice:commandLink>
+                            </li>
+                        </ui:fragment>
+                        <ui:repeat value="#{OptionsPage.alphaCharacterList}"
+                                    var="item">
+                            <ui:fragment rendered="#{(OptionsPage.vdcUIList.alphaCharacter == item)}">
+                                <li class="dvnAlphaBrowseSelected" onmouseover="this.className='dvnAlphaBrowseHover'" onmouseout="this.className='dvnAlphaBrowseSelected'">
+                                    <ice:commandLink onclick="setHiddenValues(document.getElementById('#{item}');">
+                                        <ice:outputText value="#{item}"/>
+                                        <f:attribute name="groupId" value="#{item.id}"/>
+                                        <f:attribute name="alphaCharacter" value="#{item}"/>
+                                    </ice:commandLink>
+                                </li>
+                            </ui:fragment>
+                            <ui:fragment rendered="#{(OptionsPage.vdcUIList.alphaCharacter != item)}">
+                                <li class="dvnAlphaBrowse" onmouseover="this.className='dvnAlphaBrowseHover'" onmouseout="this.className='dvnAlphaBrowse'">
+                                    <ice:commandLink onclick="setHiddenValues('#{item}');">
+                                        <ice:outputText value="#{item}"/>
+                                        <f:attribute name="groupId" value="#{item.id}"/>
+                                        <f:attribute name="alphaCharacter" value="#{item}"/>
+                                    </ice:commandLink>
+                                </li>
+                            </ui:fragment>
+                        </ui:repeat>
+                    </ul>
+                    <div jsfc="ice:panelGroup" styleClass="dvnManageTableCreateLink" rendered="#{!VDCRequest.readOnlyDatabase}">
+                        <div jsfc="ice:panelGroup" id="createStudy" styleClass="dvnCreateActionBox dvnCreateDataverse">
+                            <ice:outputLink value="/dvn/faces/site/AddSitePage.xhtml">
+                                <ice:outputText value="Create Dataverse"/>
+                            </ice:outputLink>
+                        </div>
+                    </div>
+                </div>
+                <ice:panelGrid cellpadding="0" cellspacing="0" border="0" columns="2" id="gridPanel2"
+                               styleClass="dvnManageTableControls2"
+                               columnClasses="dvnManageTableControlPad, dvnPaginatorCol">
+                    <div jsfc="ice:panelGroup">
+                        <img class="dvn_icon" src="/dvn/resources/images/icon_warning.18.png" alt=""/>
+                        <ice:outputText value=" Indicates a dataverse is not released."/>
+                    </div>
+                    <div jsfc="ice:panelGroup" styleClass="dvnPaginatorWrap">
+                        <ice:dataPaginator for="dataverseListManage"
+                                           binding="#{OptionsPage.paginator}"
+                                           id="dataScroller"
+                                           paginator="true" fastStep="3"
+                                           paginatorMaxPages="4"
+                                           renderFacetsIfSinglePage="false"
+                                           styleClass="dvnPaginatorFloatRight">
+                            <f:facet name="first">
+                                <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-first.gif" title="First Page"/>
+                            </f:facet>
+                            <f:facet name="fastrewind">
+                                <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-fr.gif" title="Fast Backward"/>
+                            </f:facet>
+                            <f:facet name="previous">
+                                <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-previous.gif" title="Previous"/>
+                            </f:facet>
+                            <f:facet name="next">
+                                <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-next.gif" title="Previous"/>
+                            </f:facet>
+                            <f:facet name="fastforward">
+                                <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-ff.gif" title="Fast Forward"/>
+                            </f:facet>
+                            <f:facet name="last">
+                                <ice:graphicImage url="/resources/icefaces/dvn_rime/css-images/arrow-last.gif" title="Previous"/>
+                            </f:facet>
+                        </ice:dataPaginator>
+                        <div class="dvnManageTableTotals">
+                                <ice:outputText value="Dataverses: "/>
+                                <ice:outputText value="#{OptionsPage.vdcUIListSize}" styleClass="dvn_totalsValue"/>
+                                <ice:outputText value=" | "/>
+                                <ice:outputText value="Unreleased: "/>
+                                <ice:outputText value="#{OptionsPage.vdcUnreleased}" styleClass="dvn_totalsValue"/>
+                        </div>
+                    </div>
+                </ice:panelGrid>
+            </div>
+            <div jsfc="ice:panelGroup">
+                <div jsfc="ice:panelGroup" styleClass="dvnManageTableEmpty" rendered="#{empty(OptionsPage.vdcUIList.vdcUIList)}">
+                    <ice:outputText styleClass="dvnManageTableEmptyMessage" value="There are no results to display. Select &#34;All&#34; or another letter to continue."/>
+                </div>
+                <ice:dataTable id="dataverseListManage" width="100%"
+                               columnWidths="15%,15%,12%,5%,10%,8%,10%,10%,10%,5%"
+                               headerClass="groupRow"
+                               rendered="#{!empty(OptionsPage.vdcUIList.vdcUIList)}"
+                               rowClasses="evenRow oddRow" rows="6"
+                               styleClass="dvnManageTable"
+                               sortColumn="#{OptionsPage.vdcUIList.sortColumnName}"
+                               sortAscending="#{OptionsPage.vdcUIList.ascending}"
+                               value="#{OptionsPage.vdcUIList.vdcUIList}"
+                               var="item">
+                <!-- name number -->
+                <f:facet name="header">
+                </f:facet>
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.nameColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.nameColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputLink id="dataverse_link" value="/dvn/dv/#{item.vdc.alias}">
+                    <ice:outputText value="#{item.name}"
+                        styleClass="#{(item.vdc.restricted) ? 'dvnAddClassificationDvNotReleased' : 'dvnAddClassificationDvReleased'}" />
+                </ice:outputLink>
+                </ice:column>
+                <!-- Affiliation -->
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.affiliationColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.affiliationColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputText value="#{item.vdc.affiliation}"/>
+                </ice:column>
+                <!-- Subnetwork -->
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.subnetworkColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.subnetworkColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputText value="#{item.vdc.vdcNetwork.id == VDCRequest.vdcNetwork.id ? '--' : item.vdc.vdcNetwork.name}"/>
+                </ice:column>
+                <!-- Type -->
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.typeColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.typeColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputText value="#{item.type}"/>
+                </ice:column>
+                <!-- Created -->
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.dateCreatedColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.dateCreatedColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputText value="#{item.createdDate}"/>
+                </ice:column>
+                <!-- Creator -->
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.createdByColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.createdByColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputText value="#{item.creator}"/>
+                </ice:column>
+                <!-- Released -->
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.dateReleasedColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.dateReleasedColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputText value="#{item.releaseDate}"/>
+                </ice:column>
+                <!-- Studies -->
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.ownedStudiesColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.ownedStudiesColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputText value="#{item.numberOwnedStudies}"/>
+                </ice:column>
+                <!-- Last Update -->
+                <ice:column>
+                <f:facet name="header">
+                    <ice:commandSortHeader
+                        columnName="#{OptionsPage.vdcUIList.lastUpdatedColumnName}"
+                        arrow="true">
+                    <ice:outputText value="#{OptionsPage.vdcUIList.lastUpdatedColumnName}"/>
+                    </ice:commandSortHeader>
+                </f:facet>
+                <ice:outputText value="#{item.lastUpdateTime}"/>
+                </ice:column>
+                <!-- Delete -->
+                <ice:column>
+                    <f:facet name="header">
+                        <ice:outputText value="Delete"/>
+                    </f:facet>
+                    <ice:outputLink value="/dvn/faces/site/DeleteDataversePage.xhtml">
+                        <f:param name="deleteId" value="#{item.vdc.id}" />
+                        <f:param name="from" value="manageDataverses"/>
+                        <ice:outputText value="Delete"/>
+                    </ice:outputLink>
+                </ice:column>
+                </ice:dataTable>
+            </div>           
+
+</div>
